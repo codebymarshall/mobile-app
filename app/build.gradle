@@ -7,7 +7,7 @@ android {
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.vacationtracker"
+        applicationId "com.vacationtracker.mobile_app"
         minSdk 26
         targetSdk 34
         versionCode 1
@@ -47,4 +47,11 @@ dependencies {
     implementation "androidx.room:room-runtime:$rootProject.roomVersion"
     annotationProcessor "androidx.room:room-compiler:$rootProject.roomVersion"
     androidTestImplementation "androidx.room:room-testing:$rootProject.roomVersion"
+
+    // Add Google Auth dependencies
+    implementation 'com.google.android.gms:play-services-auth:20.7.0'
+    implementation 'com.google.firebase:firebase-auth:22.3.1'
+    implementation 'com.google.firebase:firebase-core:21.1.1'
 }
+
+apply plugin: 'com.google.gms.google-services'
