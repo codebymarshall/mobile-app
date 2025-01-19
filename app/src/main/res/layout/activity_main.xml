@@ -8,37 +8,69 @@
     tools:context=".ui.MainActivity">
 
     <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello and welcome tap either Vacations or Excurions to start adding data!"
+        android:id="@+id/viewDataText"
+        android:layout_width="232dp"
+        android:layout_height="19dp"
+        android:text="Which data would you like to view?"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.512" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/viewDataButton1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="172dp"
+        android:layout_marginBottom="3dp"
         android:text="Vacations"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/viewDataButton2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:layout_constraintVertical_bias="0.494" />
+        app:layout_constraintTop_toBottomOf="@+id/viewDataText" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/viewDataButton2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="76dp"
         android:text="Excursions"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:layout_constraintVertical_bias="0.802" />
+        app:layout_constraintTop_toBottomOf="@+id/viewDataButton1" />
+
+    <TextView
+        android:id="@+id/createDataText"
+        android:layout_width="285dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="63dp"
+        android:layout_marginTop="82dp"
+        android:layout_marginEnd="63dp"
+        android:layout_marginBottom="68dp"
+        android:text="Lets get started by creating our first vacation!"
+        app:layout_constraintBottom_toTopOf="@+id/viewDataButton1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/viewDataText" />
+
+    <Button
+        android:id="@+id/createDataButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="131dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="131dp"
+        android:layout_marginBottom="16dp"
+        android:text="Create Vacation"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/viewDataButton2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

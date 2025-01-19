@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,7 +23,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.List;
 
 public class VacationList extends AppCompatActivity {
-private Repository repository;
+    private Repository repository;
+    private Button viewExcursionsButton;
+    private Button createExcursionButton;
+    private FloatingActionButton createVacationButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,56 +39,77 @@ private Repository repository;
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        
         repository = new Repository(getApplication());
 
-        FloatingActionButton fab=findViewById(R.id.floatingActionButton);
-        fab.setOnClickListener(view -> {
-            Intent intent=new Intent (VacationList.this,VacationDetails.class);
+        // Initialize UI elements
+        viewExcursionsButton = findViewById(R.id.viewExcursions);
+        createExcursionButton = findViewById(R.id.createExcursion);
+        createVacationButton = findViewById(R.id.floatingActionButton);
+
+        createVacationButton.setOnClickListener(view -> {
+            Intent intent = new Intent(VacationList.this, VacationDetails.class);
             startActivity(intent);
         });
 
-        findViewById(R.id.button_to_excursion_list).setOnClickListener(view -> {
+        viewExcursionsButton.setOnClickListener(view -> {
             Intent intent = new Intent(VacationList.this, ExcursionList.class);
             startActivity(intent);
         });
 
-        System.out.println(getIntent().getStringExtra("test"));
+        createExcursionButton.setOnClickListener(view -> {
+            Intent intent = new Intent(VacationList.this, ExcursionDetails.class);
+            startActivity(intent);
+        });
+
+        // Update UI based on data availability
+        updateUI();
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        if(item.getItemId()==android.R.id.home){
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home) {
             this.finish();
-           Intent intent=new Intent(VacationList.this, MainActivity.class);
-           startActivity(intent);
+            Intent intent = new Intent(VacationList.this, MainActivity.class);
+            startActivity(intent);
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-@Override
-protected void onResume() {
-    super.onResume();
-
-    if (repository == null) {
-        repository = new Repository(getApplication());
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateUI();
     }
 
-    List<Vacation> allVacations = repository.getAllVacation();
-    for (Vacation vacation : allVacations) {
-        Log.d("VacationList", "Vacation ID: " + vacation.getVacationID() + ", Name: " + vacation.getVacationName());
+    private void updateUI() {
+        // Update RecyclerView
+        RecyclerView recyclerView = findViewById(R.id.recyclerview);
+        List<Vacation> allVacations = repository.getAllVacation();
+        
+        if (recyclerView.getAdapter() == null) {
+            final VacationAdapter vacationAdapter = new VacationAdapter(this);
+            recyclerView.setAdapter(vacationAdapter);
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        }
+
+        VacationAdapter adapter = (VacationAdapter) recyclerView.getAdapter();
+        adapter.setVacations(allVacations);
+        adapter.notifyDataSetChanged();
+
+        // Update button visibility based on excursions
+        boolean hasExcursions = !repository.getAllExcursion().isEmpty();
+        
+        // Show viewExcursions button only if there are excursions
+        viewExcursionsButton.setVisibility(hasExcursions ? View.VISIBLE : View.GONE);
+        
+        // Show createExcursion button only if there are NO excursions
+        createExcursionButton.setVisibility(hasExcursions ? View.GONE : View.VISIBLE);
+
+        // Log for debugging
+        for (Vacation vacation : allVacations) {
+            Log.d("VacationList", "Vacation ID: " + vacation.getVacationID() + ", Name: " + vacation.getVacationName());
+        }
     }
-    RecyclerView recyclerView = findViewById(R.id.recyclerview);
-
-    if (recyclerView.getAdapter() == null) {
-        final VacationAdapter vacationAdapter = new VacationAdapter(this);
-        recyclerView.setAdapter(vacationAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-    }
-
-    VacationAdapter adapter = (VacationAdapter) recyclerView.getAdapter();
-    adapter.setVacations(allVacations);
-    adapter.notifyDataSetChanged();
-}
-
 }

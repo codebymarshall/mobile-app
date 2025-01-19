@@ -12,7 +12,20 @@
           "package_name": "com.vacationtracker.mobile_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "879617146695-189vq3r51o9hk2ld72fnlekd3qbf0mj6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vacationtracker.mobile_app",
+            "certificate_hash": "8d38c27b3e37b9e7e5be1f3a7d2b2f37c5f3c72d"
+          }
+        },
+        {
+          "client_id": "879617146695-69upf2oq0pdugsvbmr9oe7fpf7dcul60.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyA3KYwFWuTuhPLYMeeTmxUdFgNS5B85udQ"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "879617146695-69upf2oq0pdugsvbmr9oe7fpf7dcul60.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

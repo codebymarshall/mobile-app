@@ -26,7 +26,7 @@ public class VacationAdapter extends RecyclerView.Adapter<VacationAdapter.Vacati
         private final TextView vacationItemView;
         private VacationViewHolder(View itemView){
             super(itemView);
-            vacationItemView=itemView.findViewById(R.id.textView);
+            vacationItemView=itemView.findViewById(R.id.viewDataText);
             itemView.setOnClickListener(view -> {
                 int position=getAdapterPosition();
                 final Vacation current=mVacations.get(position);

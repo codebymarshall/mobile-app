@@ -1,97 +1,99 @@
 package com.vacationtracker.mobile_app.ui;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.vacationtracker.mobile_app.R;
-import com.vacationtracker.mobile_app.auth.AuthManager;
-import com.vacationtracker.mobile_app.auth.AuthStateListener;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseUser;
+import com.vacationtracker.mobile_app.database.Repository;
 
-public class MainActivity extends AppCompatActivity implements AuthStateListener {
-    private AuthManager authManager;
-    private ActivityResultLauncher<Intent> signInLauncher;
+public class MainActivity extends AppCompatActivity {
+    private Repository repository;
+    private TextView viewDataText;
+    private TextView createDataText;
+    private Button viewDataButton1;
+    private Button viewDataButton2;
+    private Button createDataButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        
+        // Initialize repository
+        repository = new Repository(getApplication());
+
+        // Initialize UI elements
+        viewDataText = findViewById(R.id.viewDataText);
+        createDataText = findViewById(R.id.createDataText);
+        viewDataButton1 = findViewById(R.id.viewDataButton1);
+        viewDataButton2 = findViewById(R.id.viewDataButton2);
+        createDataButton = findViewById(R.id.createDataButton);
+
+        // Set up window insets
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        Button button=findViewById(R.id.button);
-        button.setOnClickListener(view -> {
-            Intent intent=new Intent(MainActivity.this,VacationList.class);
-            startActivity(intent);
-        });
-        Button button2=findViewById(R.id.button2);
-        button2.setOnClickListener(view -> {
-            Intent intent=new Intent(MainActivity.this,ExcursionList.class);
+
+        // Set up button click listeners
+        viewDataButton1.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, VacationList.class);
             startActivity(intent);
         });
 
-        // Initialize AuthManager
-        authManager = AuthManager.getInstance(this);
-        authManager.setAuthStateListener(this);
+        viewDataButton2.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, ExcursionList.class);
+            startActivity(intent);
+        });
 
-        // Register activity result launcher
-        signInLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) {
-                    Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(result.getData());
-                    authManager.handleSignInResult(task);
-                }
-            }
-        );
+        createDataButton.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, VacationDetails.class);
+            startActivity(intent);
+        });
 
-        // Check if user is already signed in
-        if (!authManager.isUserSignedIn()) {
-            showSignInUI();
+        // Update UI based on data availability
+        updateUI();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateUI();
+    }
+
+    private void updateUI() {
+        boolean hasVacations = !repository.getAllVacation().isEmpty();
+        boolean hasExcursions = !repository.getAllExcursion().isEmpty();
+
+        if (hasVacations || hasExcursions) {
+            // Show data viewing elements
+            viewDataText.setVisibility(View.VISIBLE);
+            viewDataButton1.setVisibility(hasVacations ? View.VISIBLE : View.GONE);
+            viewDataButton2.setVisibility(hasExcursions ? View.VISIBLE : View.GONE);
+            
+            // Hide create data elements
+            createDataText.setVisibility(View.GONE);
+            createDataButton.setVisibility(View.GONE);
         } else {
-            showMainUI();
+            // Hide data viewing elements
+            viewDataText.setVisibility(View.GONE);
+            viewDataButton1.setVisibility(View.GONE);
+            viewDataButton2.setVisibility(View.GONE);
+            
+            // Show create data elements
+            createDataText.setVisibility(View.VISIBLE);
+            createDataButton.setVisibility(View.VISIBLE);
         }
-    }
-
-    private void showSignInUI() {
-        setContentView(R.layout.activity_login);
-        findViewById(R.id.sign_in_button).setOnClickListener(v -> 
-            authManager.signIn(signInLauncher)
-        );
-    }
-
-    private void showMainUI() {
-        setContentView(R.layout.activity_main);
-        // Your existing MainActivity UI setup code
-    }
-
-    @Override
-    public void onAuthSuccess(FirebaseUser user) {
-        Toast.makeText(this, "Welcome " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
-        showMainUI();
-    }
-
-    @Override
-    public void onAuthFailed(String error) {
-        Toast.makeText(this, "Authentication failed: " + error, Toast.LENGTH_SHORT).show();
     }
 }

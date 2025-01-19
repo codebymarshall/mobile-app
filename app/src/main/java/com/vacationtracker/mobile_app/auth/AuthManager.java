@@ -22,7 +22,7 @@ public class AuthManager {
 
     private AuthManager(Context context) {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("YOUR_WEB_CLIENT_ID")
+                .requestIdToken("879617146695-189vq3r51o9hk2ld72fnlekd3qbf0mj6.apps.googleusercontent.com")
                 .requestEmail()
                 .build();
 
