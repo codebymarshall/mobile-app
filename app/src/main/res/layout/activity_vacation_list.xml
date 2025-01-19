@@ -23,7 +23,7 @@
         android:id="@+id/editVacation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Please select an Excursion to edit it."
+        android:text="Please select an Vacation to edit it."
         app:layout_constraintBottom_toTopOf="@+id/recyclerview"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
