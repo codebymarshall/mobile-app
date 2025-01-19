@@ -28,7 +28,7 @@ public class ExcursionNameAdapter extends RecyclerView.Adapter<ExcursionNameAdap
     @NonNull
     @Override
     public ExcursionNameViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = mInflater.inflate(R.layout.excursion_name_list_item, parent, false);
+        View itemView = mInflater.inflate(R.layout.excursion_list_item, parent, false);
         return new ExcursionNameViewHolder(itemView);
     }
 

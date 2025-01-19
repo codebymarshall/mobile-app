@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Colors specific to night theme -->
+    <color name="Primary">#F4F8FB</color>
+    <color name="Secondary">#15B290</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="dark_gray">#4d4d4d</color>
+    <color name="accent">#1991d6</color>
+</resources> 

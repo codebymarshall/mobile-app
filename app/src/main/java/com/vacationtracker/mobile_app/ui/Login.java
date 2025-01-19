@@ -2,10 +2,13 @@ package com.vacationtracker.mobile_app.ui;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+import android.widget.VideoView;
+import android.media.MediaPlayer;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
@@ -27,12 +30,16 @@ import com.google.firebase.auth.FirebaseUser;
 public class Login extends AppCompatActivity implements AuthStateListener {
     private AuthManager authManager;
     private ActivityResultLauncher<Intent> signInLauncher;
+    private VideoView videoView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
+
+        // Initialize video background
+        setupVideoBackground();
 
         // Initialize AuthManager
         authManager = AuthManager.getInstance(this);
@@ -69,6 +76,78 @@ public class Login extends AppCompatActivity implements AuthStateListener {
             Intent intent=new Intent(Login.this,MainActivity.class);
             startActivity(intent);
         });
+    }
+
+    private void setupVideoBackground() {
+        videoView = findViewById(R.id.videoView);
+        
+        // Set up OnPreparedListener for video scaling
+        videoView.setOnPreparedListener(mp -> {
+            // Get video dimensions
+            int videoWidth = mp.getVideoWidth();
+            int videoHeight = mp.getVideoHeight();
+            
+            // Get screen dimensions
+            float screenWidth = videoView.getWidth();
+            float screenHeight = videoView.getHeight();
+            
+            // Calculate scale factors
+            float scaleX = screenWidth / videoWidth;
+            float scaleY = screenHeight / videoHeight;
+            float scale = Math.max(scaleX, scaleY);
+            
+            // Calculate new dimensions that maintain aspect ratio
+            int newWidth = (int) (videoWidth * scale);
+            int newHeight = (int) (videoHeight * scale);
+            
+            // Calculate translation to center the video
+            int xOffset = (int) ((newWidth - screenWidth) / 2);
+            int yOffset = (int) ((newHeight - screenHeight) / 2);
+            
+            // Set the new dimensions and position
+            android.view.ViewGroup.LayoutParams layoutParams = videoView.getLayoutParams();
+            layoutParams.width = newWidth;
+            layoutParams.height = newHeight;
+            videoView.setLayoutParams(layoutParams);
+            
+            // Adjust position to center
+            videoView.setTranslationX(-xOffset);
+            videoView.setTranslationY(-yOffset);
+        });
+        
+        // Create the video URI
+        String videoPath = "android.resource://" + getPackageName() + "/" + R.raw.output;
+        Uri uri = Uri.parse(videoPath);
+        
+        videoView.setVideoURI(uri);
+        videoView.start();
+        
+        // Loop the video
+        videoView.setOnCompletionListener(mp -> videoView.start());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (videoView != null && !videoView.isPlaying()) {
+            videoView.start();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (videoView != null && videoView.isPlaying()) {
+            videoView.pause();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (videoView != null) {
+            videoView.stopPlayback();
+        }
     }
 
     @Override

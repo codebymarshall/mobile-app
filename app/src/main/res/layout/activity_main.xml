@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.MainActivity">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/viewDataText"
         android:layout_width="232dp"
         android:layout_height="19dp"
@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.512" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/viewDataButton1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/viewDataText" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/viewDataButton2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -45,7 +45,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/viewDataButton1" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/createDataText"
         android:layout_width="285dp"
         android:layout_height="20dp"
@@ -59,7 +59,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/viewDataText" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/createDataButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

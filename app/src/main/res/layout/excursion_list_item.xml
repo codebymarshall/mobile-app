@@ -1,58 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    tools:context=".ui.ExcursionList"
+    style="@style/BorderedItem">
 
-    <TextView
-        android:id="@+id/excursionPrice"
-        android:layout_width="100dp"
-        android:layout_height="20dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:text="Price"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/excursionDate"
-        app:layout_constraintStart_toEndOf="@+id/excursionName"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/excursionNote"
-        android:layout_width="100dp"
-        android:layout_height="20dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginBottom="5dp"
-        android:text="Note"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/excursionDate"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/excursionDate"
-        android:layout_width="100dp"
-        android:layout_height="20dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:text="Start Date"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/excursionNote"
-        app:layout_constraintStart_toEndOf="@+id/excursionPrice"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/excursionName"
-        android:layout_width="100dp"
-        android:layout_height="20dp"
-        android:layout_marginStart="6dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:text="Name"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/excursionPrice"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:textSize="18sp"
+        android:textColor="?android:attr/textColorSecondary"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>
