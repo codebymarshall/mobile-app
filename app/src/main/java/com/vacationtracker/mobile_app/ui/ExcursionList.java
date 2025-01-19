@@ -37,13 +37,13 @@ public class ExcursionList extends AppCompatActivity {
 
         repository = new Repository(getApplication());
 
-        FloatingActionButton fab = findViewById(R.id.floatingActionButton);
+        FloatingActionButton fab = findViewById(R.id.floatingActionButton4);
         fab.setOnClickListener(view -> {
             Intent intent = new Intent(ExcursionList.this, ExcursionDetails.class);
             startActivity(intent);
         });
 
-        findViewById(R.id.button_to_vacation_list).setOnClickListener(view -> {
+        findViewById(R.id.viewVacations).setOnClickListener(view -> {
             Intent intent = new Intent(ExcursionList.this, VacationList.class);
             startActivity(intent);
         });
