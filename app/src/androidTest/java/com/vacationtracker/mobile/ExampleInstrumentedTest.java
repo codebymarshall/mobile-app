@@ -1,4 +1,4 @@
-package com.vacationtracker.mobile_app;
+package com.vacationtracker.mobile;
 
 import android.content.Context;
 
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
     public void useAppContext() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("com.vacationtracker.mobile_app", appContext.getPackageName());
+        assertEquals("com.vacationtracker.mobile", appContext.getPackageName());
     }
 }

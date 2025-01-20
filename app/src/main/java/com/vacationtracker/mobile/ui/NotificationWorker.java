@@ -1,4 +1,4 @@
-package com.vacationtracker.mobile_app.ui;
+package com.vacationtracker.mobile.ui;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
-import com.vacationtracker.mobile_app.R;
+import com.vacationtracker.mobile.R;
 
 public class NotificationWorker extends Worker {
     public NotificationWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {

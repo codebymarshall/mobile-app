@@ -1,4 +1,4 @@
-package com.vacationtracker.mobile_app.ui;
+package com.vacationtracker.mobile.ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,13 +10,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.vacationtracker.mobile_app.R;
-import com.vacationtracker.mobile_app.entities.Vacation;
+import com.vacationtracker.mobile.R;
+import com.vacationtracker.mobile.entities.Vacation;
 
 import java.util.List;
 import java.util.ArrayList;
-
-import android.util.Log;
 
 public class VacationAdapter extends RecyclerView.Adapter<VacationAdapter.VacationViewHolder> {
     private List<Vacation> mVacations = new ArrayList<>();  // Initialize with empty list

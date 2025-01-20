@@ -24,61 +24,49 @@
         android:layout_height="match_parent"
         android:background="#80000000"/>
 
-    <com.google.android.gms.common.SignInButton
-        android:id="@+id/sign_in_button"
-        android:layout_width="220dp"
-        android:layout_height="wrap_content"
-        app:buttonSize="wide"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.792" />
-
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textView8"
         android:layout_width="355dp"
         android:layout_height="26dp"
         android:layout_marginStart="86dp"
-        android:layout_marginTop="44dp"
         android:layout_marginEnd="86dp"
+        android:layout_marginBottom="8dp"
         android:text="Welcome to the Vacation Tracker App!"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/textView10"
+        app:layout_constraintBottom_toTopOf="@+id/button3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.224"
+        app:layout_constraintVertical_bias="0.179"
         app:textAllCaps="false" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/textView10"
-        android:layout_width="341dp"
-        android:layout_height="55dp"
-        android:layout_marginStart="55dp"
-        android:layout_marginEnd="56dp"
-        android:layout_marginBottom="52dp"
-        android:text="In order to sync your data across multiple devices you can sign in using your google account or continue as a guest."
-        app:layout_constraintBottom_toTopOf="@+id/sign_in_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.487"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:id="@+id/featuresList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="36dp"
+        android:gravity="center"
+        android:lineSpacingExtra="8dp"
+        android:text="• Plan your perfect vacations\n• Track excursions and activities\n• Manage travel expenses\n• Get trip reminders\n• Share your plans easily"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@id/button3"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="160dp"
-        android:layout_marginTop="28dp"
         android:layout_marginEnd="161dp"
         android:layout_marginBottom="64dp"
-        android:text="Continue as Guest"
+        android:text="Get started"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sign_in_button" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

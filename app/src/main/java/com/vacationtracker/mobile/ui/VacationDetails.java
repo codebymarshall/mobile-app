@@ -1,4 +1,4 @@
-package com.vacationtracker.mobile_app.ui;
+package com.vacationtracker.mobile.ui;
 
 import android.app.DatePickerDialog;
 import android.app.NotificationChannel;
@@ -26,10 +26,10 @@ import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
-import com.vacationtracker.mobile_app.R;
-import com.vacationtracker.mobile_app.database.Repository;
-import com.vacationtracker.mobile_app.entities.Excursion;
-import com.vacationtracker.mobile_app.entities.Vacation;
+import com.vacationtracker.mobile.R;
+import com.vacationtracker.mobile.database.Repository;
+import com.vacationtracker.mobile.entities.Excursion;
+import com.vacationtracker.mobile.entities.Vacation;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.ParseException;

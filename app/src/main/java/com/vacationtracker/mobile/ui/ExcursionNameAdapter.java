@@ -1,4 +1,4 @@
-package com.vacationtracker.mobile_app.ui;
+package com.vacationtracker.mobile.ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,8 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.vacationtracker.mobile_app.R;
-import com.vacationtracker.mobile_app.entities.Excursion;
+import com.vacationtracker.mobile.R;
+import com.vacationtracker.mobile.entities.Excursion;
 
 import java.util.List;
 

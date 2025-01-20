@@ -1,12 +1,12 @@
-package com.vacationtracker.mobile_app.database;
+package com.vacationtracker.mobile.database;
 
 import android.app.Application;
 import androidx.lifecycle.LiveData;
 
-import com.vacationtracker.mobile_app.dao.ExcusionDAO;
-import com.vacationtracker.mobile_app.dao.VacationDAO;
-import com.vacationtracker.mobile_app.entities.Excursion;
-import com.vacationtracker.mobile_app.entities.Vacation;
+import com.vacationtracker.mobile.dao.ExcusionDAO;
+import com.vacationtracker.mobile.dao.VacationDAO;
+import com.vacationtracker.mobile.entities.Excursion;
+import com.vacationtracker.mobile.entities.Vacation;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;

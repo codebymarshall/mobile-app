@@ -1,4 +1,4 @@
-package com.vacationtracker.mobile_app.dao;
+package com.vacationtracker.mobile.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -8,7 +8,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.vacationtracker.mobile_app.entities.Vacation;
+import com.vacationtracker.mobile.entities.Vacation;
 
 import java.util.List;
 

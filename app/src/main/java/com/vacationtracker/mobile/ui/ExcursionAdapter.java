@@ -1,6 +1,4 @@
-package com.vacationtracker.mobile_app.ui;
-
-
+package com.vacationtracker.mobile.ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,22 +10,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.vacationtracker.mobile_app.entities.Excursion;
-import com.vacationtracker.mobile_app.R;
+import com.vacationtracker.mobile.entities.Excursion;
+import com.vacationtracker.mobile.R;
 
 import java.util.List;
-
-/**
- * Project: Bike Arctic Fox
- * Package: android.carolynbicycleshop.arcticfox.UI
- * <p>
- * User: carolyn.sher
- * Date: 12/18/2021
- * Time: 9:15 AM
- * <p>
- * Created with Android Studio
- * To change this template use File | Settings | File Templates.
- */
 
 public class ExcursionAdapter extends RecyclerView.Adapter<ExcursionAdapter.ExcursionViewHolder> {
     private final LayoutInflater mInflater;

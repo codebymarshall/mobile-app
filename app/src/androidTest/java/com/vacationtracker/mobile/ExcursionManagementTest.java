@@ -1,4 +1,4 @@
-package com.vacationtracker.mobile_app;
+package com.vacationtracker.mobile;
 
 import androidx.room.Room;
 import androidx.test.core.app.ApplicationProvider;
@@ -13,9 +13,9 @@ import static org.junit.Assert.*;
 
 import android.content.Context;
 
-import com.vacationtracker.mobile_app.database.DatabaseBuilder;
-import com.vacationtracker.mobile_app.database.Repository;
-import com.vacationtracker.mobile_app.entities.Excursion;
+import com.vacationtracker.mobile.database.DatabaseBuilder;
+import com.vacationtracker.mobile.database.Repository;
+import com.vacationtracker.mobile.entities.Excursion;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;

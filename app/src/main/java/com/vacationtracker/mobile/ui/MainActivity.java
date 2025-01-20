@@ -1,4 +1,4 @@
-package com.vacationtracker.mobile_app.ui;
+package com.vacationtracker.mobile.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,14 +11,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.lifecycle.Observer;
 
-import com.vacationtracker.mobile_app.R;
-import com.vacationtracker.mobile_app.database.Repository;
-import com.vacationtracker.mobile_app.entities.Excursion;
-import com.vacationtracker.mobile_app.entities.Vacation;
-
-import java.util.List;
+import com.vacationtracker.mobile.R;
+import com.vacationtracker.mobile.database.Repository;
 
 public class MainActivity extends AppCompatActivity {
     private Repository repository;

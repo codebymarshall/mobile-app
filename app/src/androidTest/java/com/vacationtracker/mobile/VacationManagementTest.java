@@ -1,4 +1,4 @@
-package com.vacationtracker.mobile_app;
+package com.vacationtracker.mobile;
 
 import androidx.room.Room;
 import androidx.test.core.app.ApplicationProvider;
@@ -9,13 +9,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static org.junit.Assert.*;
-
 import android.content.Context;
 
-import com.vacationtracker.mobile_app.database.DatabaseBuilder;
-import com.vacationtracker.mobile_app.database.Repository;
-import com.vacationtracker.mobile_app.entities.Vacation;
+import com.vacationtracker.mobile.database.DatabaseBuilder;
+import com.vacationtracker.mobile.database.Repository;
+import com.vacationtracker.mobile.entities.Vacation;
 
 @RunWith(AndroidJUnit4.class)
 public class VacationManagementTest {

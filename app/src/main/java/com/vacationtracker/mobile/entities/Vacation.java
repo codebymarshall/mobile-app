@@ -1,4 +1,4 @@
-package com.vacationtracker.mobile_app.entities;
+package com.vacationtracker.mobile.entities;
 
 
 import androidx.room.Entity;

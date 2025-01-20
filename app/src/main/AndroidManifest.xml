@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.vacationtracker.mobile_app">
+    package="com.vacationtracker.mobile">
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -18,7 +18,7 @@
         tools:targetApi="31">
 
         <activity
-            android:name=".ui.Login"
+            android:name="com.vacationtracker.mobile.ui.Login"
             android:exported="true"
             android:label="Vacation Application">
             <intent-filter>
@@ -28,28 +28,28 @@
         </activity>
 
         <activity
-            android:name=".ui.ExcursionList"
+            android:name="com.vacationtracker.mobile.ui.ExcursionList"
             android:exported="false"
             android:label="Excursion List"
-            android:parentActivityName=".ui.MainActivity"/>
+            android:parentActivityName="com.vacationtracker.mobile.ui.MainActivity"/>
 
         <activity
-            android:name=".ui.ExcursionDetails"
+            android:name="com.vacationtracker.mobile.ui.ExcursionDetails"
             android:exported="false"
             android:label="Excursion Details List"
-            android:parentActivityName=".ui.VacationDetails" />
+            android:parentActivityName="com.vacationtracker.mobile.ui.VacationDetails" />
         <activity
-            android:name=".ui.VacationDetails"
+            android:name="com.vacationtracker.mobile.ui.VacationDetails"
             android:exported="false"
             android:label="Vacation Details"
-            android:parentActivityName=".ui.VacationList" />
+            android:parentActivityName="com.vacationtracker.mobile.ui.VacationList" />
         <activity
-            android:name=".ui.VacationList"
+            android:name="com.vacationtracker.mobile.ui.VacationList"
             android:exported="false"
             android:label="Vacation List"
-            android:parentActivityName=".ui.MainActivity" />
+            android:parentActivityName="com.vacationtracker.mobile.ui.MainActivity" />
         <activity
-            android:name=".ui.MainActivity"
+            android:name="com.vacationtracker.mobile.ui.MainActivity"
             android:exported="true"
             android:label="Vacation Application" />
     </application>

@@ -1,4 +1,4 @@
-package com.vacationtracker.mobile_app;
+package com.vacationtracker.mobile;
 
 import org.junit.Test;
 
