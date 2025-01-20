@@ -99,16 +99,17 @@ public class VacationDetails extends AppCompatActivity {
             return insets;
         });
 
-        FloatingActionButton fab = findViewById(R.id.floatingActionButton2);
+        // Find the excursion card
+        View excursionCard = findViewById(R.id.excursionCard);
+        
+        // Hide excursion card and FAB if creating new vacation
         if (vacationID == -1) {
-            fab.setVisibility(View.GONE); // Hide the button if creating a new vacation
+            excursionCard.setVisibility(View.GONE);
+            findViewById(R.id.floatingActionButton2).setVisibility(View.GONE);
         } else {
-            fab.setVisibility(View.VISIBLE); // Show the button if editing an existing vacation
+            excursionCard.setVisibility(View.VISIBLE);
+            findViewById(R.id.floatingActionButton2).setVisibility(View.VISIBLE);
         }
-        fab.setOnClickListener(view -> {
-            Intent intent = new Intent(VacationDetails.this, ExcursionDetails.class);
-            startActivity(intent);
-        });
 
         RecyclerView recyclerView = findViewById(R.id.excursionrecyclerview);
         repository = new Repository(getApplication());
