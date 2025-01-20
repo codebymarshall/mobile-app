@@ -35,7 +35,7 @@
     <!-- Custom button style -->
     <style name="Widget.App.Button" parent="Widget.MaterialComponents.Button">
         <item name="backgroundTint">@color/Secondary</item>
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@color/accent</item>
         <item name="android:textSize">16sp</item>
         <item name="cornerRadius">8dp</item>
     </style>

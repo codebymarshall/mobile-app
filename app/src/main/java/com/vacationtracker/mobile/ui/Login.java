@@ -7,6 +7,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.VideoView;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -47,6 +49,9 @@ public class Login extends AppCompatActivity{
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        // Add animations
+        animateElements();
     }
 
     private void setupVideoBackground() {
@@ -125,5 +130,29 @@ public class Login extends AppCompatActivity{
         Intent intent = new Intent(Login.this, MainActivity.class);
         startActivity(intent);
         finish(); // Prevent returning to login screen with back button
+    }
+
+    private void animateElements() {
+        // Fade in and slide up animations for UI elements
+        View[] views = {
+            findViewById(R.id.appLogo),
+            findViewById(R.id.welcomeText),
+            findViewById(R.id.tagline),
+            findViewById(R.id.featuresCard),
+            findViewById(R.id.button3)
+        };
+
+        for (int i = 0; i < views.length; i++) {
+            View view = views[i];
+            view.setAlpha(0f);
+            view.setTranslationY(50f);
+            view.animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setDuration(1000)
+                .setStartDelay(i * 200L)
+                .setInterpolator(new DecelerateInterpolator())
+                .start();
+        }
     }
 } 
