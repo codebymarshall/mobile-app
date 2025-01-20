@@ -20,13 +20,12 @@ import com.vacationtracker.mobile_app.database.Repository;
 import com.vacationtracker.mobile_app.entities.Vacation;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.List;
-
 public class VacationList extends AppCompatActivity {
     private Repository repository;
     private Button viewExcursionsButton;
     private Button createExcursionButton;
     private FloatingActionButton createVacationButton;
+    private VacationAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,8 +61,39 @@ public class VacationList extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Update UI based on data availability
-        updateUI();
+        // Set up RecyclerView
+        RecyclerView recyclerView = findViewById(R.id.recyclerview);
+        adapter = new VacationAdapter(this);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        // Observe data changes
+        repository.getAllVacation().observe(this, vacations -> {
+            adapter.setVacations(vacations);
+            
+            // Update UI based on vacation data
+            if (vacations == null || vacations.isEmpty()) {
+                recyclerView.setVisibility(View.GONE);
+                createVacationButton.setVisibility(View.VISIBLE);
+                viewExcursionsButton.setVisibility(View.GONE);
+                createExcursionButton.setVisibility(View.GONE);
+            } else {
+                recyclerView.setVisibility(View.VISIBLE);
+                createVacationButton.setVisibility(View.VISIBLE);
+                
+                // Log vacation data
+                for (Vacation vacation : vacations) {
+                    Log.d("VacationList", "Vacation ID: " + vacation.getVacationID() + 
+                        ", Name: " + vacation.getVacationName());
+                }
+            }
+        });
+
+        repository.getAllExcursion().observe(this, excursions -> {
+            boolean hasExcursions = excursions != null && !excursions.isEmpty();
+            viewExcursionsButton.setVisibility(hasExcursions ? View.VISIBLE : View.GONE);
+            createExcursionButton.setVisibility(hasExcursions ? View.GONE : View.VISIBLE);
+        });
     }
 
     @Override
@@ -75,41 +105,5 @@ public class VacationList extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        updateUI();
-    }
-
-    private void updateUI() {
-        // Update RecyclerView
-        RecyclerView recyclerView = findViewById(R.id.recyclerview);
-        List<Vacation> allVacations = repository.getAllVacation();
-        
-        if (recyclerView.getAdapter() == null) {
-            final VacationAdapter vacationAdapter = new VacationAdapter(this);
-            recyclerView.setAdapter(vacationAdapter);
-            recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        }
-
-        VacationAdapter adapter = (VacationAdapter) recyclerView.getAdapter();
-        adapter.setVacations(allVacations);
-        adapter.notifyDataSetChanged();
-
-        // Update button visibility based on excursions
-        boolean hasExcursions = !repository.getAllExcursion().isEmpty();
-        
-        // Show viewExcursions button only if there are excursions
-        viewExcursionsButton.setVisibility(hasExcursions ? View.VISIBLE : View.GONE);
-        
-        // Show createExcursion button only if there are NO excursions
-        createExcursionButton.setVisibility(hasExcursions ? View.GONE : View.VISIBLE);
-
-        // Log for debugging
-        for (Vacation vacation : allVacations) {
-            Log.d("VacationList", "Vacation ID: " + vacation.getVacationID() + ", Name: " + vacation.getVacationName());
-        }
     }
 }

@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.work.Data;
@@ -114,25 +115,30 @@ public class VacationDetails extends AppCompatActivity {
         final ExcursionAdapter excursionAdapter = new ExcursionAdapter(this);
         recyclerView.setAdapter(excursionAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        List<Excursion> filteredExcursions = new ArrayList<>();
-        for (Excursion e : repository.getAllExcursion()) {
-            if (e.getVacationID() == vacationId) filteredExcursions.add(e);
-        }
-        excursionAdapter.setExcursions(filteredExcursions);
 
-        // Hide TextViews if there are no excursions
+        // Hide TextViews initially
         textView2 = findViewById(R.id.textView2);
         textView3 = findViewById(R.id.textView3);
         textView4 = findViewById(R.id.textView4);
         textView5 = findViewById(R.id.textView5);
         textView6 = findViewById(R.id.textView6);
-        if (filteredExcursions.isEmpty()) {
-            textView2.setVisibility(View.GONE);
-            textView3.setVisibility(View.GONE);
-            textView4.setVisibility(View.GONE);
-            textView5.setVisibility(View.GONE);
-            textView6.setVisibility(View.GONE);
-        }
+
+        // Observe excursions for this vacation
+        repository.getAllExcursion().observe(this, excursions -> {
+            List<Excursion> filteredExcursions = new ArrayList<>();
+            for (Excursion e : excursions) {
+                if (e.getVacationID() == vacationId) filteredExcursions.add(e);
+            }
+            excursionAdapter.setExcursions(filteredExcursions);
+
+            // Update TextViews visibility
+            boolean hasExcursions = !filteredExcursions.isEmpty();
+            textView2.setVisibility(hasExcursions ? View.VISIBLE : View.GONE);
+            textView3.setVisibility(hasExcursions ? View.VISIBLE : View.GONE);
+            textView4.setVisibility(hasExcursions ? View.VISIBLE : View.GONE);
+            textView5.setVisibility(hasExcursions ? View.VISIBLE : View.GONE);
+            textView6.setVisibility(hasExcursions ? View.VISIBLE : View.GONE);
+        });
 
         startDate = (view, year, monthOfYear, dayOfMonth) -> {
             myCalendarStart.set(Calendar.YEAR, year);
@@ -209,94 +215,87 @@ public class VacationDetails extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.vacationsave) {
-            Vacation vacation;
             try {
                 SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy", Locale.US);
-
                 String startDateStr = editStartDate.getText().toString();
                 String endDateStr = editEndDate.getText().toString();
                 Date startDate = sdf.parse(startDateStr);
                 Date endDate = sdf.parse(endDateStr);
 
-                Log.d("VacationDetails", "Start date: " + startDate + ", End date: " + endDate); // Add log for debugging
-
-                if (endDate.before(startDate)) {
-                    Toast.makeText(this, "End date must be after start date", Toast.LENGTH_SHORT).show();
-                    return false;
-                }
-
-                if (startDate.before(new Date())) {
-                    Toast.makeText(this, "Start date cannot be in the past", Toast.LENGTH_SHORT).show();
-                    return false;
-                }
-
-                if (endDate.before(new Date())) {
-                    Toast.makeText(this, "End date cannot be in the past", Toast.LENGTH_SHORT).show();
-                    return false;
-                }
-
-                // Validate excursions' start dates
-                List<Excursion> excursions = repository.getAllExcursion();
-                for (Excursion excursion : excursions) {
-                    if (excursion.getVacationID() == vacationId) {
-                        Date excursionDate = sdf.parse(excursion.getDate());
-                        if (excursionDate.before(startDate)) {
-                            Toast.makeText(this, "Excursion " + excursion.getExcursionName() + " starts before the vacation start date", Toast.LENGTH_SHORT).show();
-                            return false;
-                        }
-                        if (excursionDate.after(endDate)) {
-                            Toast.makeText(this, "Excursion " + excursion.getExcursionName() + " starts after the vacation end date", Toast.LENGTH_SHORT).show();
-                            return false;
-                        }
-                    }
+                if (startDate.after(endDate)) {
+                    Toast.makeText(this, "Start date must be before end date", Toast.LENGTH_SHORT).show();
+                    return true;
                 }
 
                 if (vacationId == -1) {
-                    // Create new vacation
-                    if (repository.getAllVacation().isEmpty()) vacationId = 1;
-                    else vacationId = repository.getAllVacation().get(repository.getAllVacation().size() - 1).getVacationID() + 1;
-                    vacation = new Vacation(vacationId, editName.getText().toString(), Double.parseDouble(editPrice.getText().toString()), editHotel.getText().toString(), startDateStr, endDateStr);
-                    repository.insert(vacation);
-                    Log.d("VacationDetails", "Inserted new vacation with ID: " + vacationId);
+                    // Create new vacation logic - single observer
+                    repository.getAllVacation().observe(this, new Observer<List<Vacation>>() {
+                        @Override
+                        public void onChanged(List<Vacation> vacations) {
+                            repository.getAllVacation().removeObserver(this);  // Remove observer after first trigger
+                            
+                            int newVacationId = vacations.isEmpty() ? 1 : 
+                                vacations.get(vacations.size() - 1).getVacationID() + 1;
+                            
+                            Vacation newVacation = new Vacation(newVacationId, editName.getText().toString(), 
+                                Double.parseDouble(editPrice.getText().toString()), 
+                                editHotel.getText().toString(), startDateStr, endDateStr);
+                            repository.insert(newVacation);
+                            
+                            Intent intent = new Intent(VacationDetails.this, VacationList.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
                 } else {
-                    // Update existing vacation
-                    vacation = new Vacation(vacationId, editName.getText().toString(), Double.parseDouble(editPrice.getText().toString()), editHotel.getText().toString(), startDateStr, endDateStr);
-                    repository.update(vacation);
-                    Log.d("VacationDetails", "Updated vacation with ID: " + vacationId);
+                    // Update existing vacation - no observer needed
+                    Vacation updatedVacation = new Vacation(vacationId, editName.getText().toString(), 
+                        Double.parseDouble(editPrice.getText().toString()), 
+                        editHotel.getText().toString(), startDateStr, endDateStr);
+                    repository.update(updatedVacation);
+                    
+                    Intent intent = new Intent(VacationDetails.this, VacationList.class);
+                    startActivity(intent);
+                    finish();
                 }
-
-                // Return to VacationList page
-                Intent intent = new Intent(VacationDetails.this, VacationList.class);
-                startActivity(intent);
-                finish();
             } catch (ParseException e) {
-                Log.e("VacationDetails", "Error parsing dates", e);
                 Toast.makeText(this, "Error parsing dates", Toast.LENGTH_SHORT).show();
-            } catch (Exception e) {
-                Log.e("VacationDetails", "Error saving vacation", e);
-                Toast.makeText(this, "Error saving vacation", Toast.LENGTH_SHORT).show();
             }
+            return true;
         }
         else if(item.getItemId()==android.R.id.home){
             this.finish();
             return true;
         }
         else if (item.getItemId() == R.id.vacationdelete) {
-            Vacation currentVacation = null;
-            for (Vacation prod : repository.getAllVacation()) {
-                if (prod.getVacationID() == vacationId) currentVacation = prod;
-            }
-            numexcursion = 0;
-            for (Excursion excursion : repository.getAllExcursion()) {
-                if (excursion.getVacationID() == vacationId) ++numexcursion;
-            }
-            if (numexcursion == 0) {
-                repository.delete(currentVacation);
-                Toast.makeText(VacationDetails.this, "Vacation deleted", Toast.LENGTH_LONG).show();
-                this.finish();
-            } else {
-                Toast.makeText(VacationDetails.this, "Vacation cannot be deleted with excursions", Toast.LENGTH_LONG).show();
-            }
+            repository.getAllVacation().observe(this, vacations -> {
+                Vacation currentVacation = null;
+                for (Vacation prod : vacations) {
+                    if (prod.getVacationID() == vacationId) {
+                        currentVacation = prod;
+                        break;
+                    }
+                }
+
+                if (currentVacation != null) {
+                    final Vacation vacationToDelete = currentVacation;
+                    repository.getAllExcursion().observe(this, excursions -> {
+                        numexcursion = 0;
+                        for (Excursion excursion : excursions) {
+                            if (excursion.getVacationID() == vacationId) ++numexcursion;
+                        }
+                        
+                        if (numexcursion == 0) {
+                            repository.delete(vacationToDelete);
+                            Toast.makeText(VacationDetails.this, "Vacation deleted", Toast.LENGTH_LONG).show();
+                            finish();
+                        } else {
+                            Toast.makeText(VacationDetails.this, "Vacation cannot be deleted with excursions", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            });
+            return true;
         } else if (item.getItemId() == R.id.vacationnotify) {
             // Schedule notifications for start and end dates
             try {
@@ -364,45 +363,39 @@ public class VacationDetails extends AppCompatActivity {
     }
 
     private void shareVacationDetails() {
-        Vacation currentVacation = null;
-        for (Vacation vacation : repository.getAllVacation()) {
-            if (vacation.getVacationID() == vacationId) {
-                currentVacation = vacation;
-                break;
-            }
-        }
-
-        if (currentVacation != null) {
-            StringBuilder shareContent = new StringBuilder();
-            shareContent.append("Vacation Details\n");
-            shareContent.append("Name: ").append(currentVacation.getVacationName()).append("\n");
-            shareContent.append("Price: ").append(currentVacation.getVacationPrice()).append("\n");
-            shareContent.append("Hotel: ").append(currentVacation.getHotel()).append("\n");
-            shareContent.append("Start Date: ").append(currentVacation.getStartDate()).append("\n");
-            shareContent.append("End Date: ").append(currentVacation.getEndDate()).append("\n");
-
-            List<Excursion> excursions = repository.getAllExcursion();
-            if (!excursions.isEmpty()) {
-                shareContent.append("\nExcursions:\n");
-                for (Excursion excursion : excursions) {
-                    if (excursion.getVacationID() == vacationId) {
-                        shareContent.append("Excursion Name: ").append(excursion.getExcursionName()).append("\n");
-                        shareContent.append("Price: ").append(excursion.getExcursionPrice()).append("\n");
-                        shareContent.append("Date: ").append(excursion.getDate()).append("\n");
-                        shareContent.append("Note: ").append(excursion.getNote()).append("\n\n");
-                    }
+        repository.getAllVacation().observe(this, vacations -> {
+            Vacation currentVacation = null;
+            for (Vacation vacation : vacations) {
+                if (vacation.getVacationID() == vacationId) {
+                    currentVacation = vacation;
+                    break;
                 }
             }
 
-            Intent sendIntent = new Intent();
-            sendIntent.setAction(Intent.ACTION_SEND);
-            sendIntent.putExtra(Intent.EXTRA_TEXT, shareContent.toString());
-            sendIntent.putExtra(Intent.EXTRA_TITLE, "Vacation Details");
-            sendIntent.setType("text/plain");
-            Intent shareIntent = Intent.createChooser(sendIntent, null);
-            startActivity(shareIntent);
-        } else {
-            Toast.makeText(this, "No vacation details available to share", Toast.LENGTH_SHORT).show();
-        }
+            if (currentVacation != null) {
+                StringBuilder shareContent = new StringBuilder();
+                shareContent.append("Vacation Details\n");
+                shareContent.append("Name: ").append(currentVacation.getVacationName()).append("\n");
+                shareContent.append("Price: ").append(currentVacation.getVacationPrice()).append("\n");
+                shareContent.append("Hotel: ").append(currentVacation.getHotel()).append("\n");
+                shareContent.append("Start Date: ").append(currentVacation.getStartDate()).append("\n");
+                shareContent.append("End Date: ").append(currentVacation.getEndDate()).append("\n");
+
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("text/plain");
+                shareIntent.putExtra(Intent.EXTRA_TEXT, shareContent.toString());
+                startActivity(Intent.createChooser(shareIntent, "Share Vacation Details"));
+            }
+        });
+    }
+
+    private void generateNewVacationId() {
+        repository.getAllVacation().observe(this, vacations -> {
+            if (vacations == null || vacations.isEmpty()) {
+                vacationId = 1;
+            } else {
+                vacationId = vacations.get(vacations.size() - 1).getVacationID() + 1;
+            }
+        });
     }
 }

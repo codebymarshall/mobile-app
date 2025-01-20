@@ -11,9 +11,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.Observer;
 
 import com.vacationtracker.mobile_app.R;
 import com.vacationtracker.mobile_app.database.Repository;
+import com.vacationtracker.mobile_app.entities.Excursion;
+import com.vacationtracker.mobile_app.entities.Vacation;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private Repository repository;
@@ -62,38 +67,39 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Update UI based on data availability
-        updateUI();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        updateUI();
+        // Observe data changes
+        repository.getAllVacation().observe(this, vacations -> updateUI());
+        repository.getAllExcursion().observe(this, excursions -> updateUI());
     }
 
     private void updateUI() {
-        boolean hasVacations = !repository.getAllVacation().isEmpty();
-        boolean hasExcursions = !repository.getAllExcursion().isEmpty();
+        repository.getAllVacation().observe(this, vacations -> {
+            repository.getAllExcursion().observe(this, excursions -> {
+                boolean hasVacations = vacations != null && !vacations.isEmpty();
+                boolean hasExcursions = excursions != null && !excursions.isEmpty();
 
-        if (hasVacations || hasExcursions) {
-            // Show data viewing elements
-            viewDataText.setVisibility(View.VISIBLE);
-            viewDataButton1.setVisibility(hasVacations ? View.VISIBLE : View.GONE);
-            viewDataButton2.setVisibility(hasExcursions ? View.VISIBLE : View.GONE);
-            
-            // Hide create data elements
-            createDataText.setVisibility(View.GONE);
-            createDataButton.setVisibility(View.GONE);
-        } else {
-            // Hide data viewing elements
-            viewDataText.setVisibility(View.GONE);
-            viewDataButton1.setVisibility(View.GONE);
-            viewDataButton2.setVisibility(View.GONE);
-            
-            // Show create data elements
-            createDataText.setVisibility(View.VISIBLE);
-            createDataButton.setVisibility(View.VISIBLE);
-        }
+                runOnUiThread(() -> {
+                    if (hasVacations || hasExcursions) {
+                        // Show/hide view data elements based on specific data presence
+                        viewDataText.setVisibility(hasVacations || hasExcursions ? View.VISIBLE : View.GONE);
+                        viewDataButton1.setVisibility(hasVacations ? View.VISIBLE : View.GONE);
+                        viewDataButton2.setVisibility(hasExcursions ? View.VISIBLE : View.GONE);
+                        
+                        // Hide create data elements
+                        createDataText.setVisibility(View.GONE);
+                        createDataButton.setVisibility(View.GONE);
+                    } else {
+                        // Hide all view data elements
+                        viewDataText.setVisibility(View.GONE);
+                        viewDataButton1.setVisibility(View.GONE);
+                        viewDataButton2.setVisibility(View.GONE);
+                        
+                        // Show create data elements
+                        createDataText.setVisibility(View.VISIBLE);
+                        createDataButton.setVisibility(View.VISIBLE);
+                    }
+                });
+            });
+        });
     }
 }

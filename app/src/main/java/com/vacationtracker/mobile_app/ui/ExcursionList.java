@@ -18,10 +18,9 @@ import com.vacationtracker.mobile_app.database.Repository;
 import com.vacationtracker.mobile_app.entities.Excursion;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.List;
-
 public class ExcursionList extends AppCompatActivity {
     private Repository repository;
+    private ExcursionAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,42 +47,29 @@ public class ExcursionList extends AppCompatActivity {
             startActivity(intent);
         });
 
-        System.out.println(getIntent().getStringExtra("test"));
+        // Set up RecyclerView
+        RecyclerView recyclerView = findViewById(R.id.recyclerview);
+        adapter = new ExcursionAdapter(this);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        // Observe excursion data changes
+        repository.getAllExcursion().observe(this, excursions -> {
+            for (Excursion excursion : excursions) {
+                Log.d("ExcursionList", "Excursion ID: " + excursion.getExcursionID() + ", Name: " + excursion.getExcursionName());
+            }
+            adapter.setExcursions(excursions);
+        });
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             this.finish();
-           Intent intent=new Intent(ExcursionList.this, MainActivity.class);
-           startActivity(intent);
+            Intent intent = new Intent(ExcursionList.this, MainActivity.class);
+            startActivity(intent);
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (repository == null) {
-            repository = new Repository(getApplication());
-        }
-
-        List<Excursion> allExcursions = repository.getAllExcursion();
-        for (Excursion excursion : allExcursions) {
-            Log.d("ExcursionList", "Excursion ID: " + excursion.getExcursionID() + ", Name: " + excursion.getExcursionName());
-        }
-        RecyclerView recyclerView = findViewById(R.id.recyclerview);
-
-        if (recyclerView.getAdapter() == null) {
-            final ExcursionNameAdapter excursionNameAdapter = new ExcursionNameAdapter(this);
-            recyclerView.setAdapter(excursionNameAdapter);
-            recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        }
-
-        ExcursionNameAdapter adapter = (ExcursionNameAdapter) recyclerView.getAdapter();
-        adapter.setExcursions(allExcursions);
-        adapter.notifyDataSetChanged();
     }
 }

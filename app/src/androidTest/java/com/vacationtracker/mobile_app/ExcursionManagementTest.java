@@ -17,6 +17,12 @@ import com.vacationtracker.mobile_app.database.DatabaseBuilder;
 import com.vacationtracker.mobile_app.database.Repository;
 import com.vacationtracker.mobile_app.entities.Excursion;
 
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.TestObserver;
+
+import java.util.List;
+
 @RunWith(AndroidJUnit4.class)
 public class ExcursionManagementTest {
     private DatabaseBuilder db;
@@ -40,20 +46,37 @@ public class ExcursionManagementTest {
     public void testCreateExcursion() {
         Excursion excursion = new Excursion(1, "City Tour", 200.0, 1, "01/02/2024", "Guided city tour");
         repository.insert(excursion);
-        assertEquals(1, repository.getAllExcursion().size());
+        
+        // Use TestObserver to get the value synchronously
+        TestObserver<List<Excursion>> observer = new TestObserver<>();
+        repository.getAllExcursion().observeForever(observer);
+        assertEquals(1, observer.getValue().size());
     }
 
     @Test
     public void testAssociateExcursionWithVacation() {
-        // Ensure the list is populated
-    Excursion excursion = new Excursion(1, "City Tour", 200.0, 1, "01/02/2024", "Guided city tour");
-    repository.insert(excursion);
+        Excursion excursion = new Excursion(1, "City Tour", 200.0, 1, "01/02/2024", "Guided city tour");
+        repository.insert(excursion);
 
-    // Check that the list is not empty
-    assertFalse(repository.getAllExcursion().isEmpty());
+        TestObserver<List<Excursion>> observer = new TestObserver<>();
+        repository.getAllExcursion().observeForever(observer);
+        
+        List<Excursion> excursions = observer.getValue();
+        assertFalse(excursions.isEmpty());
+        assertEquals(1, excursions.get(0).getVacationID());
+    }
 
-    // Now safely access the first element
-    Excursion retrievedExcursion = repository.getAllExcursion().get(0);
-    assertEquals(1, retrievedExcursion.getVacationID());
+    // Helper class for testing LiveData
+    private static class TestObserver<T> implements Observer<T> {
+        private T value;
+
+        @Override
+        public void onChanged(T t) {
+            value = t;
+        }
+
+        public T getValue() {
+            return value;
+        }
     }
 }
