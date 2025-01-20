@@ -18,13 +18,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.vacationtracker.mobile.R;
 import com.vacationtracker.mobile.database.Repository;
 import com.vacationtracker.mobile.entities.Vacation;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.button.MaterialButton;
 
 public class VacationList extends AppCompatActivity {
     private Repository repository;
-    private Button viewExcursionsButton;
-    private Button createExcursionButton;
-    private FloatingActionButton createVacationButton;
+    private MaterialButton viewExcursionsButton;
+    private MaterialButton createExcursionButton;
+    private ExtendedFloatingActionButton createVacationButton;
     private VacationAdapter adapter;
 
     @Override
@@ -41,7 +42,7 @@ public class VacationList extends AppCompatActivity {
         
         repository = new Repository(getApplication());
 
-        // Initialize UI elements
+        // Initialize UI elements with correct types
         viewExcursionsButton = findViewById(R.id.viewExcursions);
         createExcursionButton = findViewById(R.id.createExcursion);
         createVacationButton = findViewById(R.id.floatingActionButton);
@@ -80,6 +81,8 @@ public class VacationList extends AppCompatActivity {
             } else {
                 recyclerView.setVisibility(View.VISIBLE);
                 createVacationButton.setVisibility(View.VISIBLE);
+                viewExcursionsButton.setVisibility(View.VISIBLE);
+                createExcursionButton.setVisibility(View.VISIBLE);
                 
                 // Log vacation data
                 for (Vacation vacation : vacations) {

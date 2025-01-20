@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.vacationtracker.mobile.R;
 import com.vacationtracker.mobile.database.Repository;
 import com.vacationtracker.mobile.entities.Excursion;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 public class ExcursionList extends AppCompatActivity {
     private Repository repository;
@@ -36,7 +36,7 @@ public class ExcursionList extends AppCompatActivity {
 
         repository = new Repository(getApplication());
 
-        FloatingActionButton fab = findViewById(R.id.floatingActionButton4);
+        ExtendedFloatingActionButton fab = findViewById(R.id.floatingActionButton4);
         fab.setOnClickListener(view -> {
             Intent intent = new Intent(ExcursionList.this, ExcursionDetails.class);
             startActivity(intent);
