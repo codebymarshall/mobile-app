@@ -186,26 +186,90 @@ public class VacationDetails extends AppCompatActivity {
             }
 
             bottomSheetView.findViewById(R.id.saveButton).setOnClickListener(view -> {
-                MenuItem saveItem = menu.findItem(R.id.vacationsave);
-                onOptionsItemSelected(saveItem);
+                String vacationName = editName.getText().toString();
+                String startDate = editStartDate.getText().toString();
+                String endDate = editEndDate.getText().toString();
+                double price = Double.parseDouble(editPrice.getText().toString());
+                String hotel = editHotel.getText().toString();
+                
+                if (vacationName.trim().isEmpty()) {
+                    Toast.makeText(this, "Please enter a vacation name", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                try {
+                    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy", Locale.US);
+                    Date parsedStartDate = sdf.parse(startDate);
+                    Date parsedEndDate = sdf.parse(endDate);
+                    
+                    if (parsedStartDate != null && parsedEndDate != null) {
+                        if (parsedStartDate.after(parsedEndDate)) {
+                            Toast.makeText(this, "Start date must be before end date", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        
+                        if (vacationId == -1) {
+                            Vacation vacation = new Vacation(0, vacationName, price, hotel, startDate, endDate);
+                            repository.insert(vacation);
+                        } else {
+                            Vacation vacation = new Vacation(vacationId, vacationName, price, hotel, startDate, endDate);
+                            repository.update(vacation);
+                        }
+                        
+                        Intent intent = new Intent(VacationDetails.this, VacationList.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                } catch (ParseException e) {
+                    Toast.makeText(this, "Error parsing dates", Toast.LENGTH_SHORT).show();
+                }
                 bottomSheetDialog.dismiss();
             });
 
             bottomSheetView.findViewById(R.id.shareButton).setOnClickListener(view -> {
-                MenuItem shareItem = menu.findItem(R.id.vacationshare);
-                onOptionsItemSelected(shareItem);
+                String vacationInfo = "Vacation: " + editName.getText().toString() + 
+                                    "\nFrom: " + editStartDate.getText().toString() + 
+                                    "\nTo: " + editEndDate.getText().toString();
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, vacationInfo);
+                sendIntent.setType("text/plain");
+                startActivity(Intent.createChooser(sendIntent, null));
                 bottomSheetDialog.dismiss();
             });
 
             bottomSheetView.findViewById(R.id.notifyButton).setOnClickListener(view -> {
-                MenuItem notifyItem = menu.findItem(R.id.vacationnotify);
-                onOptionsItemSelected(notifyItem);
+                String myFormat = "MM/dd/yy";
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+                try {
+                    Date startDate = sdf.parse(editStartDate.getText().toString());
+                    if (startDate != null) {
+                        Date notificationTime = scheduleNotification(startDate, 
+                            "The Vacation " + editName.getText().toString() + " starts today!");
+                        String toastMessage = "Notification scheduled for: " + notificationTime.toString();
+                        Toast.makeText(this, toastMessage, Toast.LENGTH_LONG).show();
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
                 bottomSheetDialog.dismiss();
             });
 
             bottomSheetView.findViewById(R.id.deleteButton).setOnClickListener(view -> {
-                MenuItem deleteItem = menu.findItem(R.id.vacationdelete);
-                onOptionsItemSelected(deleteItem);
+                if (vacationId != -1) {
+                    repository.getAllVacation().observe(this, vacations -> {
+                        for (Vacation vacation : vacations) {
+                            if (vacation.getVacationID() == vacationId) {
+                                repository.delete(vacation);
+                                Toast.makeText(this, "Vacation deleted", Toast.LENGTH_LONG).show();
+                                Intent intent = new Intent(this, VacationList.class);
+                                startActivity(intent);
+                                finish();
+                                break;
+                            }
+                        }
+                    });
+                }
                 bottomSheetDialog.dismiss();
             });
 
@@ -225,143 +289,16 @@ public class VacationDetails extends AppCompatActivity {
         editEndDate.setText(sdf.format(myCalendarEnd.getTime()));
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        this.menu = menu;
-        getMenuInflater().inflate(R.menu.menu_vacationdetails, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem saveItem = menu.findItem(R.id.vacationsave);
-        MenuItem deleteItem = menu.findItem(R.id.vacationdelete);
-        MenuItem notifyItem = menu.findItem(R.id.vacationnotify);
-        MenuItem shareItem = menu.findItem(R.id.vacationshare);
-
-        if (vacationId == -1) {
-            // Creating a new vacation
-            saveItem.setVisible(true);
-            deleteItem.setVisible(false);
-            notifyItem.setVisible(false);
-            shareItem.setVisible(false);
-        } else {
-            // Editing an existing vacation
-            saveItem.setVisible(true);
-            deleteItem.setVisible(true);
-            notifyItem.setVisible(true);
-            shareItem.setVisible(true);
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("vacation_channel", name, importance);
+            channel.setDescription(description);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
         }
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.vacationsave) {
-            try {
-                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy", Locale.US);
-                String startDateStr = editStartDate.getText().toString();
-                String endDateStr = editEndDate.getText().toString();
-                Date startDate = sdf.parse(startDateStr);
-                Date endDate = sdf.parse(endDateStr);
-
-                if (startDate.after(endDate)) {
-                    Toast.makeText(this, "Start date must be before end date", Toast.LENGTH_SHORT).show();
-                    return true;
-                }
-
-                if (vacationId == -1) {
-                    // Create new vacation logic - single observer
-                    repository.getAllVacation().observe(this, new Observer<List<Vacation>>() {
-                        @Override
-                        public void onChanged(List<Vacation> vacations) {
-                            repository.getAllVacation().removeObserver(this);  // Remove observer after first trigger
-                            
-                            int newVacationId = vacations.isEmpty() ? 1 : 
-                                vacations.get(vacations.size() - 1).getVacationID() + 1;
-                            
-                            Vacation newVacation = new Vacation(newVacationId, editName.getText().toString(), 
-                                Double.parseDouble(editPrice.getText().toString()), 
-                                editHotel.getText().toString(), startDateStr, endDateStr);
-                            repository.insert(newVacation);
-                            
-                            Intent intent = new Intent(VacationDetails.this, VacationList.class);
-                            startActivity(intent);
-                            finish();
-                        }
-                    });
-                } else {
-                    // Update existing vacation - no observer needed
-                    Vacation updatedVacation = new Vacation(vacationId, editName.getText().toString(), 
-                        Double.parseDouble(editPrice.getText().toString()), 
-                        editHotel.getText().toString(), startDateStr, endDateStr);
-                    repository.update(updatedVacation);
-                    
-                    Intent intent = new Intent(VacationDetails.this, VacationList.class);
-                    startActivity(intent);
-                    finish();
-                }
-            } catch (ParseException e) {
-                Toast.makeText(this, "Error parsing dates", Toast.LENGTH_SHORT).show();
-            }
-            return true;
-        }
-        else if(item.getItemId()==android.R.id.home){
-            this.finish();
-            return true;
-        }
-        else if (item.getItemId() == R.id.vacationdelete) {
-            repository.getAllVacation().observe(this, vacations -> {
-                Vacation currentVacation = null;
-                for (Vacation prod : vacations) {
-                    if (prod.getVacationID() == vacationId) {
-                        currentVacation = prod;
-                        break;
-                    }
-                }
-
-                if (currentVacation != null) {
-                    final Vacation vacationToDelete = currentVacation;
-                    repository.getAllExcursion().observe(this, excursions -> {
-                        numexcursion = 0;
-                        for (Excursion excursion : excursions) {
-                            if (excursion.getVacationID() == vacationId) ++numexcursion;
-                        }
-                        
-                        if (numexcursion == 0) {
-                            repository.delete(vacationToDelete);
-                            Toast.makeText(VacationDetails.this, "Vacation deleted", Toast.LENGTH_LONG).show();
-                            finish();
-                        } else {
-                            Toast.makeText(VacationDetails.this, "Vacation cannot be deleted with excursions", Toast.LENGTH_LONG).show();
-                        }
-                    });
-                }
-            });
-            return true;
-        } else if (item.getItemId() == R.id.vacationnotify) {
-            // Schedule notifications for start and end dates
-            try {
-                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy", Locale.US);
-                Date startDate = sdf.parse(editStartDate.getText().toString());
-                Date endDate = sdf.parse(editEndDate.getText().toString());
-                Date startNotificationTime = scheduleNotification(startDate, editName.getText().toString() + " starts today!");
-                Date endNotificationTime = scheduleNotification(endDate, editName.getText().toString() + " ends today!");
-
-                // Display toast with notification times
-                String toastMessage = "Notifications scheduled:\n" +
-                        "Start: " + startNotificationTime.toString() + "\n" +
-                        "End: " + endNotificationTime.toString();
-                Toast.makeText(this, toastMessage, Toast.LENGTH_LONG).show();
-            } catch (ParseException e) {
-                Log.e("VacationDetails", "Error parsing dates", e);
-                Toast.makeText(this, "Error parsing dates", Toast.LENGTH_SHORT).show();
-            }
-        } else if (item.getItemId() == R.id.vacationshare) {
-            shareVacationDetails();
-            return true;
-        }
-        return true;
     }
 
     public Date scheduleNotification(Date date, String message) {
@@ -391,18 +328,6 @@ public class VacationDetails extends AppCompatActivity {
                 });
 
         return targetTime;
-    }
-
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.channel_name);
-            String description = getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("vacation_channel", name, importance);
-            channel.setDescription(description);
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
     }
 
     private void shareVacationDetails() {

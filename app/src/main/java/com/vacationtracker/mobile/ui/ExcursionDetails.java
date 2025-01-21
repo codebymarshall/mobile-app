@@ -128,26 +128,55 @@ public class ExcursionDetails extends AppCompatActivity {
             }
 
             bottomSheetView.findViewById(R.id.saveButton).setOnClickListener(view -> {
-                MenuItem saveItem = menu.findItem(R.id.excursionsave);
-                onOptionsItemSelected(saveItem);
+                if (editName.getText().toString().trim().isEmpty()) {
+                    Toast.makeText(this, "Please enter an excursion name", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                saveExcursion();
                 bottomSheetDialog.dismiss();
             });
 
             bottomSheetView.findViewById(R.id.shareButton).setOnClickListener(view -> {
-                MenuItem shareItem = menu.findItem(R.id.share);
-                onOptionsItemSelected(shareItem);
+                String note = editNote.getText().toString();
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, note);
+                sendIntent.setType("text/plain");
+                startActivity(Intent.createChooser(sendIntent, null));
                 bottomSheetDialog.dismiss();
             });
 
             bottomSheetView.findViewById(R.id.notifyButton).setOnClickListener(view -> {
-                MenuItem notifyItem = menu.findItem(R.id.notify);
-                onOptionsItemSelected(notifyItem);
+                String dateFromScreen = editDate.getText().toString();
+                try {
+                    Date myDate = sdf.parse(dateFromScreen);
+                    if (myDate != null) {
+                        Date notificationTime = scheduleNotification(myDate, 
+                            "The Excursion " + editName.getText().toString() + " is today!");
+                        String toastMessage = "Notification scheduled for: " + notificationTime.toString();
+                        Toast.makeText(this, toastMessage, Toast.LENGTH_LONG).show();
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
                 bottomSheetDialog.dismiss();
             });
 
             bottomSheetView.findViewById(R.id.deleteButton).setOnClickListener(view -> {
-                MenuItem deleteItem = menu.findItem(R.id.excursiondelete);
-                onOptionsItemSelected(deleteItem);
+                if (excursionID != -1) {
+                    repository.getAllExcursion().observe(this, excursions -> {
+                        for (Excursion excursion : excursions) {
+                            if (excursion.getExcursionID() == excursionID) {
+                                repository.delete(excursion);
+                                Toast.makeText(this, "Excursion deleted", Toast.LENGTH_LONG).show();
+                                Intent intent = new Intent(this, ExcursionList.class);
+                                startActivity(intent);
+                                finish();
+                                break;
+                            }
+                        }
+                    });
+                }
                 bottomSheetDialog.dismiss();
             });
 
@@ -159,152 +188,6 @@ public class ExcursionDetails extends AppCompatActivity {
         String myFormat = "MM/dd/yy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
         editDate.setText(sdf.format(myCalendarStart.getTime()));
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        this.menu = menu;
-        getMenuInflater().inflate(R.menu.menu_excursiondetails, menu);
-
-        // Hide "Notify" and "Share" buttons if creating a new excursion
-        if (excursionID == -1) {
-            MenuItem notifyItem = menu.findItem(R.id.notify);
-            MenuItem shareItem = menu.findItem(R.id.share);
-            MenuItem deleteItem = menu.findItem(R.id.excursiondelete);
-            if (notifyItem != null) notifyItem.setVisible(false);
-            if (shareItem != null) shareItem.setVisible(false);
-            if (deleteItem != null) deleteItem.setVisible(false);
-        } else {
-            Log.d("ExcursionDetails", "Excursion ID is valid, showing delete option"); // Debug log
-        }
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            this.finish();
-            return true;
-        }
-
-        if (item.getItemId() == R.id.excursionsave) {
-            String name = editName.getText().toString();
-            double price;
-            try {
-                price = Double.parseDouble(editPrice.getText().toString());
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-                Toast.makeText(this, "Invalid price format", Toast.LENGTH_SHORT).show();
-                return false;
-            }
-
-            // Retrieve the selected vacationID from the spinner
-            Vacation selectedVacation = (Vacation) vacationSpinner.getText();
-            int selectedVacationID = selectedVacation.getVacationID();
-
-            String date = editDate.getText().toString();
-            String note = editNote.getText().toString();
-
-            // Validate dates
-            try {
-                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy", Locale.US);
-                Date selectedDate = sdf.parse(date);
-                Date vacationStartDate = sdf.parse(selectedVacation.getStartDate());
-                Date vacationEndDate = sdf.parse(selectedVacation.getEndDate());
-
-                if (selectedDate.before(new Date())) {
-                    Toast.makeText(this, "Date cannot be in the past", Toast.LENGTH_SHORT).show();
-                    return false;
-                }
-
-                if (selectedDate.before(vacationStartDate) || selectedDate.after(vacationEndDate)) {
-                    Toast.makeText(this, "Excursion date must be within the selected vacation dates", Toast.LENGTH_SHORT).show();
-                    return false;
-                }
-
-                if (excursionID == -1) {
-                    // Create new excursion logic - single observer
-                    repository.getAllExcursion().observe(this, new Observer<List<Excursion>>() {
-                        @Override
-                        public void onChanged(List<Excursion> excursions) {
-                            repository.getAllExcursion().removeObserver(this);  // Remove observer after first trigger
-                            
-                            int newExcursionID = excursions.isEmpty() ? 1 : 
-                                excursions.get(excursions.size() - 1).getExcursionID() + 1;
-                            
-                            Excursion newExcursion = new Excursion(newExcursionID, name, price, 
-                                selectedVacationID, date, note);
-                            repository.insert(newExcursion);
-                            
-                            Intent intent = new Intent(ExcursionDetails.this, ExcursionList.class);
-                            startActivity(intent);
-                            finish();
-                        }
-                    });
-                } else {
-                    // Update existing excursion - no observer needed
-                    Excursion existingExcursion = new Excursion(excursionID, name, price, 
-                        selectedVacationID, date, note);
-                    repository.update(existingExcursion);
-                    Intent intent = new Intent(ExcursionDetails.this, ExcursionList.class);
-                    startActivity(intent);
-                    finish();
-                }
-            } catch (ParseException e) {
-                Toast.makeText(this, "Invalid date format", Toast.LENGTH_SHORT).show();
-                return false;
-            }
-            return true;
-        }
-        if (item.getItemId() == R.id.share) {
-            Intent sendIntent = new Intent();
-            sendIntent.setAction(Intent.ACTION_SEND);
-            sendIntent.putExtra(Intent.EXTRA_TEXT, editNote.getText().toString());
-            sendIntent.putExtra(Intent.EXTRA_TITLE, "Message Title");
-            sendIntent.setType("text/plain");
-            Intent shareIntent = Intent.createChooser(sendIntent, null);
-            startActivity(shareIntent);
-            return true;
-        }
-        if (item.getItemId() == R.id.notify) {
-            String dateFromScreen = editDate.getText().toString();
-            String myFormat = "MM/dd/yy"; //In which you need put here
-            SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-            Date myDate = null;
-            try {
-                myDate = sdf.parse(dateFromScreen);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            if (myDate != null) {
-                Date notificationTime = scheduleNotification(myDate, "The Excursion " + editName.getText().toString() + " is today!");
-
-                // Display toast with notification time
-                String toastMessage = "Notification scheduled for: " + notificationTime.toString();
-                Toast.makeText(this, toastMessage, Toast.LENGTH_LONG).show();
-            }
-            return true;
-        }
-        if (item.getItemId() == R.id.excursiondelete) {
-            if (excursionID != -1) {
-                repository.getAllExcursion().observe(this, excursions -> {
-                    for (Excursion excursion : excursions) {
-                        if (excursion.getExcursionID() == excursionID) {
-                            repository.delete(excursion);
-                            Toast.makeText(ExcursionDetails.this, "Excursion deleted", Toast.LENGTH_LONG).show();
-                            Intent intent = new Intent(ExcursionDetails.this, ExcursionList.class);
-                            startActivity(intent);
-                            finish();
-                            break;
-                        }
-                    }
-                });
-            }
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     private Date scheduleNotification(Date date, String message) {
@@ -334,5 +217,68 @@ public class ExcursionDetails extends AppCompatActivity {
                 });
 
         return targetTime;
+    }
+
+    private boolean saveExcursion() {
+        if (editName.getText().toString().trim().isEmpty()) {
+            Toast.makeText(this, "Please enter an excursion name", Toast.LENGTH_LONG).show();
+            return false;
+        }
+
+        String name = editName.getText().toString();
+        double price = Double.parseDouble(editPrice.getText().toString());
+        String selectedVacationText = vacationSpinner.getText().toString();
+        String excursionDate = editDate.getText().toString();
+        
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy", Locale.US);
+            Date excursionDateParsed = sdf.parse(excursionDate);
+            
+            repository.getAllVacation().observe(this, vacations -> {
+                for (Vacation vacation : vacations) {
+                    if (vacation.getVacationName().equals(selectedVacationText)) {
+                        try {
+                            Date vacationStartDate = sdf.parse(vacation.getStartDate());
+                            Date vacationEndDate = sdf.parse(vacation.getEndDate());
+                            
+                            if (excursionDateParsed.before(vacationStartDate) || excursionDateParsed.after(vacationEndDate)) {
+                                Toast.makeText(this, 
+                                    "Excursion date must be between (" + 
+                                    vacation.getStartDate() + " - " + vacation.getEndDate() + ")", 
+                                    Toast.LENGTH_LONG).show();
+                                return;
+                            }
+                            
+                            if (excursionID == -1) {
+                                // Create new excursion
+                                Excursion newExcursion = new Excursion(0, name, price, 
+                                    vacation.getVacationID(), excursionDate, 
+                                    editNote.getText().toString());
+                                repository.insert(newExcursion);
+                            } else {
+                                // Update existing excursion
+                                Excursion existingExcursion = new Excursion(excursionID, name, price, 
+                                    vacation.getVacationID(), excursionDate, 
+                                    editNote.getText().toString());
+                                repository.update(existingExcursion);
+                            }
+                            
+                            Intent intent = new Intent(ExcursionDetails.this, ExcursionList.class);
+                            startActivity(intent);
+                            finish();
+                            break;
+                        } catch (ParseException e) {
+                            Toast.makeText(this, "Error validating dates", Toast.LENGTH_LONG).show();
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+        } catch (ParseException e) {
+            Toast.makeText(this, "Invalid excursion date format", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 }
