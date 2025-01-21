@@ -70,4 +70,9 @@ public class Vacation {
     public void setEndDate(String endDate) {
         this.endDate = endDate;
     }
+
+    @Override
+    public String toString() {
+        return vacationName;  // Or you could format it like: return vacationName + " (" + startDate + " - " + endDate + ")";
+    }
 }

@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +21,7 @@ import com.vacationtracker.mobile.R;
 import com.vacationtracker.mobile.entities.Excursion;
 import com.vacationtracker.mobile.entities.Vacation;
 import com.vacationtracker.mobile.database.Repository;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -38,7 +38,7 @@ public class ExcursionDetails extends AppCompatActivity {
     EditText editPrice;
     EditText editNote;
     TextView editDate;
-    Spinner spinner;
+    MaterialAutoCompleteTextView vacationSpinner;
     Repository repository;
     DatePickerDialog.OnDateSetListener startDate;
     final Calendar myCalendarStart = Calendar.getInstance();
@@ -53,7 +53,7 @@ public class ExcursionDetails extends AppCompatActivity {
         editPrice = findViewById(R.id.excursionPrice);
         editNote = findViewById(R.id.note);
         editDate = findViewById(R.id.date);
-        spinner = findViewById(R.id.spinner);
+        vacationSpinner = findViewById(R.id.vacationSpinner);
 
         String myFormat = "MM/dd/yy";
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
@@ -62,7 +62,7 @@ public class ExcursionDetails extends AppCompatActivity {
         repository.getAllVacation().observe(this, vacationList -> {
             VacationSpinnerAdapter vacationAdapter = new VacationSpinnerAdapter(this, android.R.layout.simple_spinner_item, vacationList);
             vacationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinner.setAdapter(vacationAdapter);
+            vacationSpinner.setAdapter(vacationAdapter);
 
             // Set selected vacation if editing existing excursion
             if (excursionID != -1) {
@@ -75,7 +75,7 @@ public class ExcursionDetails extends AppCompatActivity {
                             editDate.setText(excursion.getDate());
                             for (int i = 0; i < vacationList.size(); i++) {
                                 if (vacationList.get(i).getVacationID() == excursion.getVacationID()) {
-                                    spinner.setSelection(i);
+                                    vacationSpinner.setText(vacationList.get(i).getVacationName());
                                     break;
                                 }
                             }
@@ -157,7 +157,7 @@ public class ExcursionDetails extends AppCompatActivity {
             }
 
             // Retrieve the selected vacationID from the spinner
-            Vacation selectedVacation = (Vacation) spinner.getSelectedItem();
+            Vacation selectedVacation = (Vacation) vacationSpinner.getText();
             int selectedVacationID = selectedVacation.getVacationID();
 
             String date = editDate.getText().toString();
