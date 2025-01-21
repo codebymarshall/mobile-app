@@ -100,11 +100,16 @@ public class VacationList extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == android.R.id.home) {
-            this.finish();
-            Intent intent = new Intent(VacationList.this, MainActivity.class);
-            startActivity(intent);
+            onBackPressed();
             return true;
         }
         return super.onOptionsItemSelected(item);

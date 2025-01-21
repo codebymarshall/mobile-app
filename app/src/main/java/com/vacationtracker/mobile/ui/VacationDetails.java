@@ -8,7 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -19,7 +18,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.work.Data;
@@ -30,7 +28,6 @@ import com.vacationtracker.mobile.R;
 import com.vacationtracker.mobile.database.Repository;
 import com.vacationtracker.mobile.entities.Excursion;
 import com.vacationtracker.mobile.entities.Vacation;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.text.ParseException;
@@ -53,7 +50,6 @@ public class VacationDetails extends AppCompatActivity {
     EditText editHotel;
     TextView editStartDate;
     TextView editEndDate;
-    int numexcursion;
     Repository repository;
     DatePickerDialog.OnDateSetListener startDate;
     DatePickerDialog.OnDateSetListener endDate;
@@ -365,40 +361,4 @@ public class VacationDetails extends AppCompatActivity {
         return targetTime;
     }
 
-    private void shareVacationDetails() {
-        repository.getAllVacation().observe(this, vacations -> {
-            Vacation currentVacation = null;
-            for (Vacation vacation : vacations) {
-                if (vacation.getVacationID() == vacationId) {
-                    currentVacation = vacation;
-                    break;
-                }
-            }
-
-            if (currentVacation != null) {
-                StringBuilder shareContent = new StringBuilder();
-                shareContent.append("Vacation Details\n");
-                shareContent.append("Name: ").append(currentVacation.getVacationName()).append("\n");
-                shareContent.append("Price: ").append(currentVacation.getVacationPrice()).append("\n");
-                shareContent.append("Hotel: ").append(currentVacation.getHotel()).append("\n");
-                shareContent.append("Start Date: ").append(currentVacation.getStartDate()).append("\n");
-                shareContent.append("End Date: ").append(currentVacation.getEndDate()).append("\n");
-
-                Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                shareIntent.setType("text/plain");
-                shareIntent.putExtra(Intent.EXTRA_TEXT, shareContent.toString());
-                startActivity(Intent.createChooser(shareIntent, "Share Vacation Details"));
-            }
-        });
-    }
-
-    private void generateNewVacationId() {
-        repository.getAllVacation().observe(this, vacations -> {
-            if (vacations == null || vacations.isEmpty()) {
-                vacationId = 1;
-            } else {
-                vacationId = vacations.get(vacations.size() - 1).getVacationID() + 1;
-            }
-        });
-    }
 }
