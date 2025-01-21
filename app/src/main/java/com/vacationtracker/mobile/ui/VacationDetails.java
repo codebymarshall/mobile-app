@@ -103,15 +103,6 @@ public class VacationDetails extends AppCompatActivity {
 
         // Find the excursion card
         View excursionCard = findViewById(R.id.excursionCard);
-        
-        // Hide excursion card and FAB if creating new vacation
-        if (vacationID == -1) {
-            excursionCard.setVisibility(View.GONE);
-            findViewById(R.id.floatingActionButton2).setVisibility(View.GONE);
-        } else {
-            excursionCard.setVisibility(View.VISIBLE);
-            findViewById(R.id.floatingActionButton2).setVisibility(View.VISIBLE);
-        }
 
         RecyclerView recyclerView = findViewById(R.id.excursionrecyclerview);
         repository = new Repository(getApplication());
@@ -227,15 +218,42 @@ public class VacationDetails extends AppCompatActivity {
             });
 
             bottomSheetView.findViewById(R.id.shareButton).setOnClickListener(view -> {
-                String vacationInfo = "Vacation: " + editName.getText().toString() + 
-                                    "\nFrom: " + editStartDate.getText().toString() + 
-                                    "\nTo: " + editEndDate.getText().toString();
-                Intent sendIntent = new Intent();
-                sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, vacationInfo);
-                sendIntent.setType("text/plain");
-                startActivity(Intent.createChooser(sendIntent, null));
-                bottomSheetDialog.dismiss();
+                repository.getAllExcursion().observe(this, excursions -> {
+                    StringBuilder shareContent = new StringBuilder();
+                    shareContent.append("Vacation Details\n\n");
+                    shareContent.append("Name: ").append(editName.getText().toString()).append("\n");
+                    shareContent.append("Hotel: ").append(editHotel.getText().toString()).append("\n");
+                    shareContent.append("Price: $").append(editPrice.getText().toString()).append("\n");
+                    shareContent.append("From: ").append(editStartDate.getText().toString()).append("\n");
+                    shareContent.append("To: ").append(editEndDate.getText().toString()).append("\n\n");
+
+                    // Add excursions if any exist for this vacation
+                    List<Excursion> vacationExcursions = new ArrayList<>();
+                    for (Excursion excursion : excursions) {
+                        if (excursion.getVacationID() == vacationId) {
+                            vacationExcursions.add(excursion);
+                        }
+                    }
+
+                    if (!vacationExcursions.isEmpty()) {
+                        shareContent.append("Excursions:\n");
+                        for (Excursion excursion : vacationExcursions) {
+                            shareContent.append("\n- ").append(excursion.getExcursionName()).append("\n");
+                            shareContent.append("  Date: ").append(excursion.getDate()).append("\n");
+                            shareContent.append("  Price: $").append(excursion.getExcursionPrice()).append("\n");
+                            if (excursion.getNote() != null && !excursion.getNote().isEmpty()) {
+                                shareContent.append("  Note: ").append(excursion.getNote()).append("\n");
+                            }
+                        }
+                    }
+
+                    Intent sendIntent = new Intent();
+                    sendIntent.setAction(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, shareContent.toString());
+                    sendIntent.setType("text/plain");
+                    startActivity(Intent.createChooser(sendIntent, "Share Vacation Details"));
+                    bottomSheetDialog.dismiss();
+                });
             });
 
             bottomSheetView.findViewById(R.id.notifyButton).setOnClickListener(view -> {
@@ -257,16 +275,33 @@ public class VacationDetails extends AppCompatActivity {
 
             bottomSheetView.findViewById(R.id.deleteButton).setOnClickListener(view -> {
                 if (vacationId != -1) {
-                    repository.getAllVacation().observe(this, vacations -> {
-                        for (Vacation vacation : vacations) {
-                            if (vacation.getVacationID() == vacationId) {
-                                repository.delete(vacation);
-                                Toast.makeText(this, "Vacation deleted", Toast.LENGTH_LONG).show();
-                                Intent intent = new Intent(this, VacationList.class);
-                                startActivity(intent);
-                                finish();
+                    repository.getAllExcursion().observe(this, excursions -> {
+                        // Check if there are any excursions associated with this vacation
+                        boolean hasAssociatedExcursions = false;
+                        for (Excursion excursion : excursions) {
+                            if (excursion.getVacationID() == vacationId) {
+                                hasAssociatedExcursions = true;
                                 break;
                             }
+                        }
+
+                        if (hasAssociatedExcursions) {
+                            Toast.makeText(this, 
+                                "Cannot delete vacation with associated excursions.", 
+                                Toast.LENGTH_LONG).show();
+                        } else {
+                            repository.getAllVacation().observe(this, vacations -> {
+                                for (Vacation vacation : vacations) {
+                                    if (vacation.getVacationID() == vacationId) {
+                                        repository.delete(vacation);
+                                        Toast.makeText(this, "Vacation deleted", Toast.LENGTH_LONG).show();
+                                        Intent intent = new Intent(this, VacationList.class);
+                                        startActivity(intent);
+                                        finish();
+                                        break;
+                                    }
+                                }
+                            });
                         }
                     });
                 }

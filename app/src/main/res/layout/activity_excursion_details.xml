@@ -98,12 +98,16 @@
     <!-- Bottom Button -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/menuButton"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
+        app:strokeColor="@color/Primary"
+        app:backgroundTint="?attr/colorSurface"
+        android:textColor="@color/Primary"
         android:text="Menu"
         app:icon="@drawable/ic_menu_more"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_editor_absoluteX="16dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

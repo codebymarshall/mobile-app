@@ -22,6 +22,7 @@
         <!-- Button colors -->
         <item name="colorButtonNormal">@color/Secondary</item>
         <item name="materialButtonStyle">@style/Widget.App.Button</item>
+        
     </style>
 
     <!-- Custom border style -->

@@ -4,4 +4,5 @@
     <color name="Secondary">#15B290</color>
     <color name="dark_gray">#4d4d4d</color>
     <color name="accent">#F4F8FB</color>
+    <color name="white">#FFFFFFFF</color>
 </resources>

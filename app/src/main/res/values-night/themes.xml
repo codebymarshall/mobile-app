@@ -14,7 +14,7 @@
         <!-- Text colors -->
         <item name="android:textColor">@color/Primary</item>
         <item name="android:textColorPrimary">@color/Primary</item>
-        <item name="android:textColorSecondary">@color/accent</item>
+        <item name="android:textColorSecondary">@color/Primary</item>
         
         <!-- Background -->
         <item name="android:windowBackground">@color/accent</item>
@@ -22,11 +22,12 @@
         <!-- Button colors -->
         <item name="colorButtonNormal">@color/Secondary</item>
         <item name="materialButtonStyle">@style/Widget.App.Button</item>
+        
     </style>
 
     <!-- Custom border style -->
     <style name="BorderedItem" parent="Widget.MaterialComponents.CardView">
-        <item name="cardBackgroundColor">@color/Primary</item>
+        <item name="cardBackgroundColor">@color/accent</item>
         <item name="cardElevation">2dp</item>
         <item name="cardCornerRadius">4dp</item>
         <item name="android:layout_margin">8dp</item>
@@ -35,7 +36,7 @@
     <!-- Custom button style -->
     <style name="Widget.App.Button" parent="Widget.MaterialComponents.Button">
         <item name="backgroundTint">@color/Secondary</item>
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@color/Primary</item>
         <item name="android:textSize">16sp</item>
         <item name="cornerRadius">8dp</item>
     </style>

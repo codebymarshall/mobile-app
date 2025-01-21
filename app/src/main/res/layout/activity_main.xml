@@ -75,7 +75,7 @@
                 android:layout_marginTop="16dp"
                 android:text="View Vacations"
                 app:icon="@android:drawable/ic_menu_today"
-                app:iconTint="@color/accent" />
+                app:iconTint="@color/white" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/viewDataButton2"
@@ -84,7 +84,7 @@
                 android:layout_marginTop="8dp"
                 android:text="View Excursions"
                 app:icon="@android:drawable/ic_menu_compass"
-                app:iconTint="@color/accent" />
+                app:iconTint="@color/white" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -121,8 +121,8 @@
                 android:layout_marginTop="16dp"
                 android:text="Create New Vacation"
                 app:icon="@android:drawable/ic_input_add"
-                app:iconTint="@color/accent"
-                app:rippleColor="@color/accent" />
+                app:iconTint="@color/white"
+                app:rippleColor="@color/white" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 

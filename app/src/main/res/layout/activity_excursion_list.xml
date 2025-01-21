@@ -70,7 +70,7 @@
             android:text="View Vacations"
             app:cornerRadius="8dp"
             app:icon="@android:drawable/ic_menu_today"
-            app:iconTint="@color/accent" />
+            app:iconTint="@color/white" />
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/floatingActionButton4"

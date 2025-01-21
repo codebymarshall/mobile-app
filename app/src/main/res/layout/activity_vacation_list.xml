@@ -64,7 +64,7 @@
             android:text="View Excursions"
             app:cornerRadius="8dp"
             app:icon="@android:drawable/ic_menu_compass"
-            app:iconTint="@color/accent" />
+            app:iconTint="@color/white" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/createExcursion"
@@ -74,7 +74,7 @@
             android:text="Create Excursion"
             app:cornerRadius="8dp"
             app:icon="@android:drawable/ic_input_add"
-            app:iconTint="@color/accent" />
+            app:iconTint="@color/white" />
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/floatingActionButton"
@@ -82,7 +82,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:text="Add New Vacation"
-            app:icon="@android:drawable/ic_input_add"/>
+            app:icon="@android:drawable/ic_input_add"
+            app:iconTint="@color/white" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

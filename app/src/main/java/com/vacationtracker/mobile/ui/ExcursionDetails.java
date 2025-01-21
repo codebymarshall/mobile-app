@@ -153,13 +153,43 @@ public class ExcursionDetails extends AppCompatActivity {
             });
 
             bottomSheetView.findViewById(R.id.shareButton).setOnClickListener(view -> {
-                String note = editNote.getText().toString();
-                Intent sendIntent = new Intent();
-                sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, note);
-                sendIntent.setType("text/plain");
-                startActivity(Intent.createChooser(sendIntent, null));
-                bottomSheetDialog.dismiss();
+                repository.getAllVacation().observe(this, vacations -> {
+                    StringBuilder shareContent = new StringBuilder();
+                    
+                    // Get the selected vacation using the text value
+                    String selectedVacationName = vacationSpinner.getText().toString();
+                    Vacation selectedVacation = null;
+                    for (Vacation vacation : vacations) {
+                        if (vacation.getVacationName().equals(selectedVacationName)) {
+                            selectedVacation = vacation;
+                            break;
+                        }
+                    }
+
+                    if (selectedVacation != null) {
+                        shareContent.append("Vacation: ").append(selectedVacation.getVacationName()).append("\n");
+                        shareContent.append("Hotel: ").append(selectedVacation.getHotel()).append("\n");
+                        shareContent.append("Dates: ").append(selectedVacation.getStartDate())
+                                 .append(" - ").append(selectedVacation.getEndDate()).append("\n\n");
+                    }
+
+                    shareContent.append("Excursion Details\n\n");
+                    shareContent.append("Name: ").append(editName.getText().toString()).append("\n");
+                    shareContent.append("Date: ").append(editDate.getText().toString()).append("\n");
+                    shareContent.append("Price: $").append(editPrice.getText().toString()).append("\n");
+                    
+                    String note = editNote.getText().toString();
+                    if (!note.isEmpty()) {
+                        shareContent.append("Note: ").append(note).append("\n");
+                    }
+
+                    Intent sendIntent = new Intent();
+                    sendIntent.setAction(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, shareContent.toString());
+                    sendIntent.setType("text/plain");
+                    startActivity(Intent.createChooser(sendIntent, "Share Excursion Details"));
+                    bottomSheetDialog.dismiss();
+                });
             });
 
             bottomSheetView.findViewById(R.id.notifyButton).setOnClickListener(view -> {
