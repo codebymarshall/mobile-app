@@ -13,6 +13,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.activity.EdgeToEdge;
+import androidx.core.graphics.Insets;
 import androidx.lifecycle.Observer;
 import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
@@ -34,6 +36,10 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.ViewCompat;
+
+
 public class ExcursionDetails extends AppCompatActivity {
     int excursionID;
     EditText editName;
@@ -50,13 +56,23 @@ public class ExcursionDetails extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_excursion_details);
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        EdgeToEdge.enable(this);
+
+        // Initialize views
         repository = new Repository(getApplication());
         editName = findViewById(R.id.excursionName);
         editPrice = findViewById(R.id.excursionPrice);
         editNote = findViewById(R.id.note);
         editDate = findViewById(R.id.date);
         vacationSpinner = findViewById(R.id.vacationSpinner);
+
+        // Set up edge-to-edge content
+        View mainContent = findViewById(android.R.id.content);
+        ViewCompat.setOnApplyWindowInsetsListener(mainContent, (v, windowInsets) -> {
+            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(0, insets.top, 0, insets.bottom);
+            return WindowInsetsCompat.CONSUMED;
+        });
 
         String myFormat = "MM/dd/yy";
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);

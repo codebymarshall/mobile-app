@@ -6,6 +6,9 @@ import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.vacationtracker.mobile.R;
 import com.vacationtracker.mobile.database.Repository;
@@ -27,6 +30,14 @@ public class MainActivity extends AppCompatActivity {
         // Initialize UI elements
         viewDataCard = findViewById(R.id.viewDataCard);
         createDataCard = findViewById(R.id.createDataCard);
+
+        // Set up edge-to-edge content
+        View mainContent = findViewById(android.R.id.content);
+        ViewCompat.setOnApplyWindowInsetsListener(mainContent, (v, windowInsets) -> {
+            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(0, insets.top, 0, insets.bottom);
+            return WindowInsetsCompat.CONSUMED;
+        });
 
         // Set up button click listeners
         findViewById(R.id.viewDataButton1).setOnClickListener(view -> {
