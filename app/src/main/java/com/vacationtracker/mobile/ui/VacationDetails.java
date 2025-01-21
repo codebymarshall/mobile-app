@@ -31,6 +31,7 @@ import com.vacationtracker.mobile.database.Repository;
 import com.vacationtracker.mobile.entities.Excursion;
 import com.vacationtracker.mobile.entities.Vacation;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -59,6 +60,7 @@ public class VacationDetails extends AppCompatActivity {
     final Calendar myCalendarStart = Calendar.getInstance();
     final Calendar myCalendarEnd = Calendar.getInstance();
     TextView textView2, textView3, textView4, textView5, textView6;
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -170,6 +172,45 @@ public class VacationDetails extends AppCompatActivity {
             datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000); // Set minimum date to today
             datePickerDialog.show();
         });
+
+        findViewById(R.id.menuButton).setOnClickListener(v -> {
+            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+            View bottomSheetView = getLayoutInflater().inflate(R.layout.vacation_actions_bottom_sheet, null);
+            bottomSheetDialog.setContentView(bottomSheetView);
+
+            // Hide buttons if creating new vacation
+            if (vacationId == -1) {
+                bottomSheetView.findViewById(R.id.deleteButton).setVisibility(View.GONE);
+                bottomSheetView.findViewById(R.id.notifyButton).setVisibility(View.GONE);
+                bottomSheetView.findViewById(R.id.shareButton).setVisibility(View.GONE);
+            }
+
+            bottomSheetView.findViewById(R.id.saveButton).setOnClickListener(view -> {
+                MenuItem saveItem = menu.findItem(R.id.vacationsave);
+                onOptionsItemSelected(saveItem);
+                bottomSheetDialog.dismiss();
+            });
+
+            bottomSheetView.findViewById(R.id.shareButton).setOnClickListener(view -> {
+                MenuItem shareItem = menu.findItem(R.id.vacationshare);
+                onOptionsItemSelected(shareItem);
+                bottomSheetDialog.dismiss();
+            });
+
+            bottomSheetView.findViewById(R.id.notifyButton).setOnClickListener(view -> {
+                MenuItem notifyItem = menu.findItem(R.id.vacationnotify);
+                onOptionsItemSelected(notifyItem);
+                bottomSheetDialog.dismiss();
+            });
+
+            bottomSheetView.findViewById(R.id.deleteButton).setOnClickListener(view -> {
+                MenuItem deleteItem = menu.findItem(R.id.vacationdelete);
+                onOptionsItemSelected(deleteItem);
+                bottomSheetDialog.dismiss();
+            });
+
+            bottomSheetDialog.show();
+        });
     }
 
     private void updateLabelStart() {
@@ -186,6 +227,7 @@ public class VacationDetails extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
         getMenuInflater().inflate(R.menu.menu_vacationdetails, menu);
         return true;
     }

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,6 +18,7 @@ import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.vacationtracker.mobile.R;
 import com.vacationtracker.mobile.entities.Excursion;
 import com.vacationtracker.mobile.entities.Vacation;
@@ -42,6 +44,7 @@ public class ExcursionDetails extends AppCompatActivity {
     Repository repository;
     DatePickerDialog.OnDateSetListener startDate;
     final Calendar myCalendarStart = Calendar.getInstance();
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +114,45 @@ public class ExcursionDetails extends AppCompatActivity {
             datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000); // Set minimum date to today
             datePickerDialog.show();
         });
+
+        findViewById(R.id.menuButton).setOnClickListener(v -> {
+            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+            View bottomSheetView = getLayoutInflater().inflate(R.layout.excursion_actions_bottom_sheet, null);
+            bottomSheetDialog.setContentView(bottomSheetView);
+
+            // Hide buttons if creating new excursion
+            if (excursionID == -1) {
+                bottomSheetView.findViewById(R.id.deleteButton).setVisibility(View.GONE);
+                bottomSheetView.findViewById(R.id.notifyButton).setVisibility(View.GONE);
+                bottomSheetView.findViewById(R.id.shareButton).setVisibility(View.GONE);
+            }
+
+            bottomSheetView.findViewById(R.id.saveButton).setOnClickListener(view -> {
+                MenuItem saveItem = menu.findItem(R.id.excursionsave);
+                onOptionsItemSelected(saveItem);
+                bottomSheetDialog.dismiss();
+            });
+
+            bottomSheetView.findViewById(R.id.shareButton).setOnClickListener(view -> {
+                MenuItem shareItem = menu.findItem(R.id.share);
+                onOptionsItemSelected(shareItem);
+                bottomSheetDialog.dismiss();
+            });
+
+            bottomSheetView.findViewById(R.id.notifyButton).setOnClickListener(view -> {
+                MenuItem notifyItem = menu.findItem(R.id.notify);
+                onOptionsItemSelected(notifyItem);
+                bottomSheetDialog.dismiss();
+            });
+
+            bottomSheetView.findViewById(R.id.deleteButton).setOnClickListener(view -> {
+                MenuItem deleteItem = menu.findItem(R.id.excursiondelete);
+                onOptionsItemSelected(deleteItem);
+                bottomSheetDialog.dismiss();
+            });
+
+            bottomSheetDialog.show();
+        });
     }
 
     private void updateLabelStart() {
@@ -121,6 +163,7 @@ public class ExcursionDetails extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
         getMenuInflater().inflate(R.menu.menu_excursiondetails, menu);
 
         // Hide "Notify" and "Share" buttons if creating a new excursion
