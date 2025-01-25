@@ -6,7 +6,6 @@ Welcome to the Vacation and Excursion Management App! This application helps you
 
 <img src="https://github.com/user-attachments/assets/0ae3516e-ec0f-4b9d-9452-0bbdcbe418d6" width="300" height="600">
 <img src="https://github.com/user-attachments/assets/924fa8ec-07c0-4e6d-9d67-6fe4fb59ee7a" width="300" height="600">
-<img src="https://github.com/user-attachments/assets/2ec83faf-8100-49fd-9bea-2dda18139113" width="300" height="600">
 
 ## Features
 
@@ -29,6 +28,8 @@ Welcome to the Vacation and Excursion Management App! This application helps you
   - Price
   - Notes
 - View all excursions associated with a vacation
+
+  <img src="https://github.com/user-attachments/assets/2ec83faf-8100-49fd-9bea-2dda18139113" width="300" height="600">
 
 ### Smart Features
 
