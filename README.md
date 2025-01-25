@@ -3,6 +3,7 @@
 ## Overview
 
 Welcome to the Vacation and Excursion Management App! This application helps you organize your vacations and excursions with a beautiful, user-friendly interface. The app opens with an engaging video background that welcomes you to start planning your adventures.
+
 <img src="https://github.com/user-attachments/assets/0ae3516e-ec0f-4b9d-9452-0bbdcbe418d6" width="300" height="600">
 <img src="https://github.com/user-attachments/assets/924fa8ec-07c0-4e6d-9d67-6fe4fb59ee7a" width="300" height="600">
 <img src="https://github.com/user-attachments/assets/2ec83faf-8100-49fd-9bea-2dda18139113" width="300" height="600">
